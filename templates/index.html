@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{ meta_refresh|safe if meta_refresh }}
     <title>BitLucky - Win Bitcoin Anonymously</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
@@ -39,6 +40,27 @@
                 <div class="wallet-info">
                     <div class="balance">{{ wallet_content.prize_amount }} BTC</div>
                     <div class="raffle-date">Next Raffle: {{ wallet_content.next_raffle_date }}</div>
+                    <div class="countdown">
+                        <div class="countdown-title">Time Remaining:</div>
+                        <div class="countdown-timer">
+                            <div class="countdown-box">
+                                <span class="countdown-value">{{ wallet_content.countdown_days }}</span>
+                                <span class="countdown-label">Days</span>
+                            </div>
+                            <div class="countdown-box">
+                                <span class="countdown-value">{{ wallet_content.countdown_hours }}</span>
+                                <span class="countdown-label">Hours</span>
+                            </div>
+                            <div class="countdown-box">
+                                <span class="countdown-value">{{ wallet_content.countdown_minutes }}</span>
+                                <span class="countdown-label">Minutes</span>
+                            </div>
+                            <div class="countdown-box">
+                                <span class="countdown-value">{{ wallet_content.countdown_seconds }}</span>
+                                <span class="countdown-label">Seconds</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -157,6 +157,57 @@ a:hover {
 .raffle-date {
     font-size: 1.2rem;
     color: var(--color-light);
+    margin-bottom: var(--spacing-md);
+}
+
+/* Countdown Timer Styles */
+.countdown {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: var(--spacing-md);
+    width: 100%;
+}
+
+.countdown-title {
+    font-size: 1.2rem;
+    color: var(--color-accent);
+    margin-bottom: var(--spacing-sm);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.countdown-timer {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+    width: 100%;
+}
+
+.countdown-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 2px solid var(--color-accent);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-sm);
+    min-width: 65px;
+}
+
+.countdown-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--color-accent);
+    line-height: 1;
+}
+
+.countdown-label {
+    font-size: 0.8rem;
+    color: var(--color-light);
+    text-transform: uppercase;
+    margin-top: 5px;
 }
 
 /* Raffle Packages */

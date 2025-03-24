@@ -383,18 +383,8 @@ def packages():
     # GET request - display all packages
     packages = Package.query.filter_by(is_active=True).all()
     
-    # Get wallet content from database
-    wallet_content = {
-        'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
-        'prize_amount': '0.1',  # Default
-        'next_raffle_date': 'April 23, 2025'  # Default
-    }
-    
-    # Override with values from database if they exist
-    for key in wallet_content.keys():
-        content = SiteContent.query.filter_by(section='wallet', key=key).first()
-        if content:
-            wallet_content[key] = content.value
+    # Get wallet content from database with countdown info
+    wallet_content = get_wallet_content()
             
     return render_template('packages.html', packages=packages, wallet_content=wallet_content)
 
@@ -413,18 +403,8 @@ def package_detail(package_id):
     # Format the Bitcoin amount to 8 decimal places (satoshi precision)
     btc_formatted = "{:.8f}".format(btc_amount)
     
-    # Get wallet address from database
-    wallet_content = {
-        'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
-        'prize_amount': '0.1',  # Default
-        'next_raffle_date': 'April 23, 2025'  # Default
-    }
-    
-    # Override with values from database if they exist
-    for key in wallet_content.keys():
-        content = SiteContent.query.filter_by(section='wallet', key=key).first()
-        if content:
-            wallet_content[key] = content.value
+    # Get wallet content from database with countdown info
+    wallet_content = get_wallet_content()
     
     return render_template('package_detail.html', 
                           package=package, 
