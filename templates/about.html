@@ -7,12 +7,27 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="container">
+            <div class="logo">
+                <h1>BitLucky</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('packages') }}">Packages</a></li>
+                <li><a href="{{ url_for('about') }}" class="active">About</a></li>
+                <li><a href="{{ url_for('faq') }}">FAQ</a></li>
+            </ul>
+        </div>
+    </nav>
+    
     <!-- Hero Section -->
     <header class="hero">
         <div class="container">
             <h1 class="hero-title">BitLucky</h1>
             <p class="hero-tagline">About Us</p>
-            <a href="/" class="cta-button">Back to Home</a>
+            <a href="{{ url_for('index') }}" class="cta-button">Back to Home</a>
         </div>
     </header>
 
