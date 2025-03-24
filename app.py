@@ -61,7 +61,21 @@ def faq():
     """Render the FAQ page with frequently asked questions"""
     # Get all FAQ entries from the database, ordered by their position
     faqs = FAQ.query.order_by(FAQ.order).all()
-    return render_template('faq.html', faqs=faqs)
+    
+    # Get wallet content from database
+    wallet_content = {
+        'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
+        'prize_amount': '0.1',  # Default
+        'next_raffle_date': 'April 23, 2025'  # Default
+    }
+    
+    # Override with values from database if they exist
+    for key in wallet_content.keys():
+        content = SiteContent.query.filter_by(section='wallet', key=key).first()
+        if content:
+            wallet_content[key] = content.value
+            
+    return render_template('faq.html', faqs=faqs, wallet_content=wallet_content)
 
 @app.route('/about')
 def about():
@@ -119,7 +133,21 @@ def packages():
     
     # GET request - display all packages
     packages = Package.query.filter_by(is_active=True).all()
-    return render_template('packages.html', packages=packages)
+    
+    # Get wallet content from database
+    wallet_content = {
+        'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
+        'prize_amount': '0.1',  # Default
+        'next_raffle_date': 'April 23, 2025'  # Default
+    }
+    
+    # Override with values from database if they exist
+    for key in wallet_content.keys():
+        content = SiteContent.query.filter_by(section='wallet', key=key).first()
+        if content:
+            wallet_content[key] = content.value
+            
+    return render_template('packages.html', packages=packages, wallet_content=wallet_content)
 
 @app.route('/packages/<int:package_id>')
 def package_detail(package_id):
@@ -168,7 +196,7 @@ def init_faq():
             ),
             FAQ(
                 question="How does the raffle work?",
-                answer="Every 30 days, we raffle off a Bitcoin wallet containing 0.1 BTC. Entry tickets can be purchased with Bitcoin for complete anonymity. The more entries you buy, the better your chances of winning!",
+                answer="Every 30 days, we raffle off a Bitcoin wallet. Entry tickets can be purchased with Bitcoin for complete anonymity. The more entries you buy, the better your chances of winning!",
                 order=2
             ),
             FAQ(
@@ -183,7 +211,7 @@ def init_faq():
             ),
             FAQ(
                 question="What happens when I win?",
-                answer="When you win, the entire wallet containing 0.1 BTC is transferred to you automatically. No claims to file, no forms to fill out - just instant cryptocurrency in your possession.",
+                answer="When you win, the entire wallet is transferred to you automatically. No claims to file, no forms to fill out - just instant cryptocurrency in your possession.",
                 order=5
             )
         ]

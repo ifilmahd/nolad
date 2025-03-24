@@ -40,7 +40,7 @@
             {% endwith %}
             
             <h2 class="section-title">Available Packages</h2>
-            <p class="section-description">All packages enter you into our monthly raffle for a 0.1 BTC wallet. Remember, you deserve a win!</p>
+            <p class="section-description">All packages enter you into our monthly raffle for a {{ wallet_content.prize_amount }} BTC wallet. Remember, you deserve a win!</p>
             
             <div class="packages-container">
                 {% for package in packages %}

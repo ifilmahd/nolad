@@ -38,7 +38,13 @@
                 <div class="faq-item">
                     <h3 class="faq-question">{{ faq.question }}</h3>
                     <div class="faq-answer">
-                        <p>{{ faq.answer }}</p>
+                        {% if faq.question == "How does the raffle work?" %}
+                            <p>Every 30 days, we raffle off a Bitcoin wallet containing {{ wallet_content.prize_amount }} BTC. Entry tickets can be purchased with Bitcoin for complete anonymity. The more entries you buy, the better your chances of winning!</p>
+                        {% elif faq.question == "What happens when I win?" %}
+                            <p>When you win, the entire wallet containing {{ wallet_content.prize_amount }} BTC is transferred to you automatically. No claims to file, no forms to fill out - just instant cryptocurrency in your possession.</p>
+                        {% else %}
+                            <p>{{ faq.answer }}</p>
+                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}
