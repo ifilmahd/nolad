@@ -4,7 +4,7 @@ import json
 import time
 from decimal import Decimal
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-from models import db, FAQ, Admin, Package, SiteContent, Raffle
+from models import db, FAQ, Admin, Package, SiteContent, Raffle, Entry
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
@@ -213,9 +213,11 @@ def packages():
         btc_wallet = request.form.get('btc_wallet')
         txid = request.form.get('txid')
         btc_amount = request.form.get('btc_amount')
+        usd_amount = request.form.get('usd_amount')
+        btc_price = request.form.get('btc_price')
         
         # Basic validation
-        if not all([package_id, email, btc_wallet, txid]):
+        if not all([package_id, email, btc_wallet, txid, btc_amount]):
             flash('All fields are required. Please try again.', 'warning')
             return redirect(url_for('package_detail', package_id=package_id))
         
@@ -224,19 +226,40 @@ def packages():
             flash('Please enter a valid Bitcoin wallet address.', 'warning')
             return redirect(url_for('package_detail', package_id=package_id))
         
-        # Store the entry details in session for now
-        # In a real application, this would be stored in the database
-        session['entry_submitted'] = True
-        session['entry_email'] = email
-        session['entry_wallet'] = btc_wallet
-        session['entry_txid'] = txid
-        
         # Get the package details
         package = Package.query.get_or_404(package_id)
         
-        # Show success message
-        flash(f'Thank you for your entry! {package.entries} entries have been added to the current raffle. Good luck!', 'success')
-        return redirect(url_for('index'))
+        try:
+            # Create new entry in the database
+            entry = Entry(
+                email=email,
+                btc_wallet=btc_wallet,
+                txid=txid,
+                btc_amount=float(btc_amount),
+                usd_amount=package.price,
+                btc_price=float(btc_price),
+                package_id=package.id,
+                entry_count=package.entries,
+                is_verified=False  # Admin will verify later
+            )
+            
+            # Add entry to database
+            db.session.add(entry)
+            db.session.commit()
+            
+            # Store minimal entry info in session for confirmation page
+            session['entry_submitted'] = True
+            session['entry_email'] = email
+            
+            # Show success message
+            flash(f'Thank you for your entry! {package.entries} entries have been added to the current raffle. Your transaction will be verified shortly. Good luck!', 'success')
+            return redirect(url_for('index'))
+        except Exception as e:
+            # If there's an error saving to the database
+            db.session.rollback()
+            print(f"Error saving entry: {str(e)}")
+            flash('There was an error processing your entry. Please try again or contact support.', 'danger')
+            return redirect(url_for('package_detail', package_id=package_id))
     
     # GET request - display all packages
     packages = Package.query.filter_by(is_active=True).all()

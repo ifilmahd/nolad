@@ -43,6 +43,32 @@ class Package(db.Model):
     description = db.Column(db.Text, nullable=True)
     is_active = db.Column(db.Boolean, default=True)
     
+    # Relationship to entries
+    entries_purchased = db.relationship('Entry', backref='package', lazy=True)
+    
+class Entry(db.Model):
+    """Model for raffle entry purchases"""
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), nullable=False)
+    btc_wallet = db.Column(db.String(120), nullable=False)  # User's Bitcoin wallet for prize
+    txid = db.Column(db.String(120), nullable=False)  # Bitcoin transaction ID
+    btc_amount = db.Column(db.Float, nullable=False)  # BTC amount paid
+    usd_amount = db.Column(db.Float, nullable=False)  # USD equivalent at time of purchase
+    btc_price = db.Column(db.Float, nullable=False)  # BTC price at time of purchase
+    
+    # Verification status
+    is_verified = db.Column(db.Boolean, default=False)  # Admin verified the transaction
+    verification_notes = db.Column(db.Text, nullable=True)  # Admin notes on verification
+    
+    # Purchase timestamp
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationship to package
+    package_id = db.Column(db.Integer, db.ForeignKey('package.id'), nullable=False)
+    
+    # Number of entries this purchase represents
+    entry_count = db.Column(db.Integer, nullable=False, default=1)
+    
 class SiteContent(db.Model):
     """Model for editable site content"""
     id = db.Column(db.Integer, primary_key=True)
