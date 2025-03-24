@@ -1,4 +1,7 @@
 import os
+import requests
+import json
+from decimal import Decimal
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from models import db, FAQ, Admin, Package, SiteContent, Raffle
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -7,6 +10,23 @@ from functools import wraps
 # Create the app
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev_secret_key")
+
+# Function to get the current Bitcoin price in USD
+def get_bitcoin_price():
+    try:
+        response = requests.get('https://api.coindesk.com/v1/bpi/currentprice/USD.json')
+        data = response.json()
+        return float(data['bpi']['USD']['rate'].replace(',', ''))
+    except Exception as e:
+        # If API call fails, return a fallback price
+        print(f"Error getting Bitcoin price: {e}")
+        return 65000.00  # Fallback price in case API is down
+
+# Function to convert USD to BTC
+def usd_to_btc(usd_amount):
+    btc_price = get_bitcoin_price()
+    btc_amount = usd_amount / btc_price
+    return btc_amount
 
 # Admin login required decorator
 def admin_required(f):
@@ -62,7 +82,18 @@ def package_detail(package_id):
     if not package.is_active:
         flash('This package is currently unavailable.', 'warning')
         return redirect(url_for('packages'))
-    return render_template('package_detail.html', package=package)
+        
+    # Calculate Bitcoin price
+    btc_price = get_bitcoin_price()
+    btc_amount = usd_to_btc(package.price)
+    
+    # Format the Bitcoin amount to 8 decimal places (satoshi precision)
+    btc_formatted = "{:.8f}".format(btc_amount)
+    
+    return render_template('package_detail.html', 
+                          package=package, 
+                          btc_price=btc_price,
+                          btc_amount=btc_formatted)
 
 # Initialize FAQ data
 def init_faq():
@@ -77,7 +108,7 @@ def init_faq():
             ),
             FAQ(
                 question="How does the raffle work?",
-                answer="Every 30 days, we raffle off a Bitcoin wallet containing 0.1 BTC. Entry tickets can be purchased with Bitcoin or Monero for complete anonymity. The more entries you buy, the better your chances of winning!",
+                answer="Every 30 days, we raffle off a Bitcoin wallet containing 0.1 BTC. Entry tickets can be purchased with Bitcoin for complete anonymity. The more entries you buy, the better your chances of winning!",
                 order=2
             ),
             FAQ(

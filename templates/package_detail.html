@@ -280,7 +280,7 @@
                             <li>{{ package.entries }} entries in this month's raffle</li>
                             <li>Chance to win a 0.1 BTC wallet</li>
                             <li>Complete anonymity guaranteed</li>
-                            <li>Pay with Bitcoin or Monero</li>
+                            <li>Pay with Bitcoin</li>
                             <li>Instant entry confirmation</li>
                         </ul>
                     </div>
@@ -289,43 +289,66 @@
                 <div class="checkout-container">
                     <h2 class="checkout-title">Purchase {{ package.name }} Package</h2>
                     
-                    <div class="payment-methods">
-                        <div class="payment-method" onclick="togglePayment('bitcoin')">
-                            <div class="payment-method-header">
-                                <div class="payment-method-icon">₿</div>
-                                <div class="payment-method-name">Pay with Bitcoin</div>
-                            </div>
-                            <div id="bitcoin-details" class="payment-details" style="display: none;">
-                                <div class="payment-address">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div>
-                                <div class="payment-instructions">
-                                    <p>Send exactly ${{ "%.2f"|format(package.price) }} worth of Bitcoin to the address above.</p>
-                                    <p>Include your anonymous identifier in the transaction memo to claim your entries.</p>
-                                    <p>Entries will be confirmed once the transaction receives 3 confirmations.</p>
-                                </div>
-                            </div>
+                    <div class="payment-info">
+                        <h3>Payment Information</h3>
+                        <div class="bitcoin-price-info">
+                            <p>Current Bitcoin Price: ${{ "{:,.2f}".format(btc_price) }}</p>
+                            <p>Package Price: ${{ "%.2f"|format(package.price) }}</p>
                         </div>
                         
-                        <div class="or-divider">OR</div>
+                        <div class="payment-method-header">
+                            <div class="payment-method-icon">₿</div>
+                            <div class="payment-method-name">Bitcoin Payment Details</div>
+                        </div>
                         
-                        <div class="payment-method" onclick="togglePayment('monero')">
-                            <div class="payment-method-header">
-                                <div class="payment-method-icon">ꭗ</div>
-                                <div class="payment-method-name">Pay with Monero</div>
-                            </div>
-                            <div id="monero-details" class="payment-details" style="display: none;">
-                                <div class="payment-address">4BrL51JCc9NGQ71kWhnYoDRffsDZy7m1HUU7MRU4nUMXAHNFBEJhkTZV9HdaL4gfuNBxLPc3BeMkLGaPbF5vWtANQn5nfD5y8Ugwu81VH1K</div>
-                                <div class="payment-instructions">
-                                    <p>Send exactly ${{ "%.2f"|format(package.price) }} worth of Monero to the address above.</p>
-                                    <p>Include your anonymous identifier in the transaction memo to claim your entries.</p>
-                                    <p>Entries will be confirmed once the transaction receives 10 confirmations.</p>
-                                </div>
+                        <div class="payment-details">
+                            <div class="payment-address">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div>
+                            <div class="payment-amount">Amount: <strong>{{ btc_amount }} BTC</strong></div>
+                            
+                            <div class="payment-instructions">
+                                <ul>
+                                    <li><strong>Send the exact amount shown above</strong></li>
+                                    <li>Keep your Transaction ID (TXID) - you'll need it below</li>
+                                    <li>Payments are final and non-refundable</li>
+                                    <li>Only enter after payment is completed</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
                     
+                    <div class="entry-form">
+                        <h3>Enter Your Details</h3>
+                        <form action="{{ url_for('packages') }}" method="post">
+                            <input type="hidden" name="package_id" value="{{ package.id }}">
+                            <input type="hidden" name="btc_amount" value="{{ btc_amount }}">
+                            
+                            <div class="form-group">
+                                <label for="email">Email*:</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="btc_wallet">Your Bitcoin Wallet Address*:</label>
+                                <input type="text" id="btc_wallet" name="btc_wallet" required>
+                                <small>(We'll use this to send your prize if you win)</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="txid">Transaction ID (TXID)*:</label>
+                                <input type="text" id="txid" name="txid" required>
+                                <small>(The transaction ID from your Bitcoin payment)</small>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="submit-button">Submit Entry</button>
+                                <a href="{{ url_for('packages') }}" class="cancel-button">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                    
                     <div class="info-box">
                         <h3>Privacy Guaranteed</h3>
-                        <p>Your entries are linked only to your anonymous identifier. We never collect personal information.</p>
+                        <p>Your entries are linked only to your Bitcoin wallet address. We never collect personal information beyond what's necessary.</p>
                         <p>All winnings are automatically transferred to the wallet address that you provide during the entry process.</p>
                     </div>
                 </div>
@@ -372,15 +395,6 @@
         </div>
     </footer>
     
-    <script>
-        function togglePayment(method) {
-            // Hide all payment details
-            document.getElementById('bitcoin-details').style.display = 'none';
-            document.getElementById('monero-details').style.display = 'none';
-            
-            // Show the selected payment details
-            document.getElementById(method + '-details').style.display = 'block';
-        }
-    </script>
+    <!-- No JavaScript needed for this page -->
 </body>
 </html>
