@@ -100,8 +100,74 @@ def get_wallet_content():
         content = SiteContent.query.filter_by(section='wallet', key=key).first()
         if content:
             wallet_content[key] = content.value
+    
+    # Add countdown information
+    wallet_content.update(get_countdown_info())
             
     return wallet_content
+
+# Function to calculate countdown information
+def get_countdown_info():
+    """Calculate and return raffle countdown information"""
+    from datetime import datetime, timedelta
+    
+    # Get the next raffle date from database
+    next_raffle_content = SiteContent.query.filter_by(section='wallet', key='next_raffle_date').first()
+    
+    try:
+        # Try to parse the date from the database
+        if next_raffle_content:
+            next_raffle_str = next_raffle_content.value
+            next_raffle_date = datetime.strptime(next_raffle_str, "%B %d, %Y")
+        else:
+            # Default to April 23, 2025 if not in database
+            next_raffle_date = datetime.strptime("April 23, 2025", "%B %d, %Y")
+        
+        # Get current time
+        now = datetime.now()
+        
+        # Calculate time difference
+        time_diff = next_raffle_date - now
+        
+        # If the date has passed, calculate the next 30-day cycle
+        if time_diff.total_seconds() <= 0:
+            # Find the next raffle date by adding 30-day increments
+            days_passed = (now - next_raffle_date).days
+            cycles_passed = (days_passed // 30) + 1
+            next_raffle_date = next_raffle_date + timedelta(days=cycles_passed * 30)
+            time_diff = next_raffle_date - now
+            
+            # Update the database with the new raffle date
+            if next_raffle_content:
+                next_raffle_content.value = next_raffle_date.strftime("%B %d, %Y")
+                db.session.commit()
+        
+        # Calculate days, hours, minutes
+        days = time_diff.days
+        hours = time_diff.seconds // 3600
+        minutes = (time_diff.seconds % 3600) // 60
+        seconds = time_diff.seconds % 60
+        
+        # Format the next raffle date
+        formatted_date = next_raffle_date.strftime("%B %d, %Y")
+        
+        return {
+            'countdown_days': days,
+            'countdown_hours': hours,
+            'countdown_minutes': minutes,
+            'countdown_seconds': seconds,
+            'next_raffle_date': formatted_date
+        }
+    except Exception as e:
+        print(f"Error calculating countdown: {str(e)}")
+        # Return default values if there's an error
+        return {
+            'countdown_days': 30,
+            'countdown_hours': 0,
+            'countdown_minutes': 0,
+            'countdown_seconds': 0,
+            'next_raffle_date': "April 23, 2025"
+        }
 
 # Admin login required decorator
 def admin_required(f):
@@ -116,12 +182,8 @@ def admin_required(f):
 @app.route('/')
 def index():
     """Render the main page of the BitLucky raffle site"""
-    # Get wallet content from database
-    wallet_content = {
-        'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
-        'prize_amount': '0.1',  # Default
-        'next_raffle_date': 'April 23, 2025'  # Default
-    }
+    # Get wallet content from database with countdown info
+    wallet_content = get_wallet_content()
     
     # Get winner content from database
     winner_content = {
@@ -129,19 +191,16 @@ def index():
         'testimonial': '"I never thought I\'d win. BitLucky changed my life while keeping my identity safe!"'  # Default
     }
     
-    # Override wallet content with values from database if they exist
-    for key in wallet_content.keys():
-        content = SiteContent.query.filter_by(section='wallet', key=key).first()
-        if content:
-            wallet_content[key] = content.value
-            
     # Override winner content with values from database if they exist
     for key in winner_content.keys():
         content = SiteContent.query.filter_by(section='winner', key=key).first()
         if content:
             winner_content[key] = content.value
     
-    return render_template('index.html', wallet_content=wallet_content, winner_content=winner_content)
+    # Add meta refresh tag to update countdown every minute
+    meta_refresh = '<meta http-equiv="refresh" content="60">'
+    
+    return render_template('index.html', wallet_content=wallet_content, winner_content=winner_content, meta_refresh=meta_refresh)
 
 @app.route('/faq')
 def faq():
@@ -149,88 +208,38 @@ def faq():
     # Get all FAQ entries from the database, ordered by their position
     faqs = FAQ.query.order_by(FAQ.order).all()
     
-    # Get wallet content from database
-    wallet_content = {
-        'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
-        'prize_amount': '0.1',  # Default
-        'next_raffle_date': 'April 23, 2025'  # Default
-    }
-    
-    # Override with values from database if they exist
-    for key in wallet_content.keys():
-        content = SiteContent.query.filter_by(section='wallet', key=key).first()
-        if content:
-            wallet_content[key] = content.value
+    # Get wallet content from database with countdown info
+    wallet_content = get_wallet_content()
             
     return render_template('faq.html', faqs=faqs, wallet_content=wallet_content)
 
 @app.route('/about')
 def about():
     """Render the About page with information about BitLucky"""
-    # Get wallet content from database
-    wallet_content = {
-        'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
-        'prize_amount': '0.1',  # Default
-        'next_raffle_date': 'April 23, 2025'  # Default
-    }
-    
-    # Override with values from database if they exist
-    for key in wallet_content.keys():
-        content = SiteContent.query.filter_by(section='wallet', key=key).first()
-        if content:
-            wallet_content[key] = content.value
+    # Get wallet content from database with countdown info
+    wallet_content = get_wallet_content()
             
     return render_template('about.html', wallet_content=wallet_content)
 
 # Additional routes for placeholder pages
 @app.route('/terms')
 def terms():
-    # Get wallet content from database
-    wallet_content = {
-        'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
-        'prize_amount': '0.1',  # Default
-        'next_raffle_date': 'April 23, 2025'  # Default
-    }
-    
-    # Override with values from database if they exist
-    for key in wallet_content.keys():
-        content = SiteContent.query.filter_by(section='wallet', key=key).first()
-        if content:
-            wallet_content[key] = content.value
+    # Get wallet content from database with countdown info
+    wallet_content = get_wallet_content()
             
     return render_template('terms.html', wallet_content=wallet_content)
 
 @app.route('/privacy')
 def privacy():
-    # Get wallet content from database
-    wallet_content = {
-        'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
-        'prize_amount': '0.1',  # Default
-        'next_raffle_date': 'April 23, 2025'  # Default
-    }
-    
-    # Override with values from database if they exist
-    for key in wallet_content.keys():
-        content = SiteContent.query.filter_by(section='wallet', key=key).first()
-        if content:
-            wallet_content[key] = content.value
+    # Get wallet content from database with countdown info
+    wallet_content = get_wallet_content()
             
     return render_template('privacy.html', wallet_content=wallet_content)
 
 @app.route('/contact')
 def contact():
-    # Get wallet content from database
-    wallet_content = {
-        'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
-        'prize_amount': '0.1',  # Default
-        'next_raffle_date': 'April 23, 2025'  # Default
-    }
-    
-    # Override with values from database if they exist
-    for key in wallet_content.keys():
-        content = SiteContent.query.filter_by(section='wallet', key=key).first()
-        if content:
-            wallet_content[key] = content.value
+    # Get wallet content from database with countdown info
+    wallet_content = get_wallet_content()
             
     return render_template('contact.html', wallet_content=wallet_content)
 
@@ -299,18 +308,8 @@ def transaction_confirmation():
     print(f"TRANSACTION CONFIRMATION - email: {email}, txid: {txid}, btc_amount: {btc_amount}, entries: {entries}")
     print(f"TRANSACTION CONFIRMATION - All args: {request.args}")
     
-    # Get wallet content from database
-    wallet_content = {
-        'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
-        'prize_amount': '0.1',  # Default
-        'next_raffle_date': 'April 23, 2025'  # Default
-    }
-    
-    # Override with values from database if they exist
-    for key in wallet_content.keys():
-        content = SiteContent.query.filter_by(section='wallet', key=key).first()
-        if content:
-            wallet_content[key] = content.value
+    # Get wallet content from database with countdown info
+    wallet_content = get_wallet_content()
     
     return render_template('transaction_confirmation.html', 
                           email=email,
