@@ -489,7 +489,19 @@ def admin_logout():
 @admin_required
 def admin_dashboard():
     """Admin dashboard page"""
-    return render_template('admin/dashboard.html')
+    # Get some stats for the dashboard
+    entry_count = Entry.query.count()
+    verified_count = Entry.query.filter_by(is_verified=True).count()
+    pending_count = entry_count - verified_count
+    
+    # Get recent entries
+    recent_entries = Entry.query.order_by(Entry.created_at.desc()).limit(5).all()
+    
+    return render_template('admin/dashboard.html', 
+                           entry_count=entry_count,
+                           verified_count=verified_count,
+                           pending_count=pending_count,
+                           recent_entries=recent_entries)
 
 @app.route('/eng/faqs', methods=['GET', 'POST'])
 @admin_required
@@ -622,6 +634,49 @@ def admin_refresh_btc_price():
     
     # Redirect back to the content management page
     return redirect(url_for('admin_content'))
+
+@app.route('/eng/entries', methods=['GET', 'POST'])
+@admin_required
+def admin_entries():
+    """Admin entries management page - for verifying Bitcoin payments"""
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'verify':
+            entry_id = request.form.get('id')
+            entry = Entry.query.get(entry_id)
+            
+            if entry:
+                entry.is_verified = True
+                entry.verification_notes = request.form.get('verification_notes', '')
+                db.session.commit()
+                flash('Entry verified successfully!', 'success')
+                
+        elif action == 'reject':
+            entry_id = request.form.get('id')
+            entry = Entry.query.get(entry_id)
+            
+            if entry:
+                entry.is_verified = False
+                entry.verification_notes = request.form.get('verification_notes', '')
+                db.session.commit()
+                flash('Entry marked as rejected!', 'warning')
+                
+        return redirect(url_for('admin_entries'))
+    
+    # Filter by verification status if requested
+    filter_status = request.args.get('filter')
+    if filter_status == 'verified':
+        entries = Entry.query.filter_by(is_verified=True).order_by(Entry.created_at.desc()).all()
+        filter_active = 'verified'
+    elif filter_status == 'pending':
+        entries = Entry.query.filter_by(is_verified=False).order_by(Entry.created_at.desc()).all()
+        filter_active = 'pending'
+    else:
+        entries = Entry.query.order_by(Entry.created_at.desc()).all()
+        filter_active = 'all'
+    
+    return render_template('admin/entries.html', entries=entries, filter_active=filter_active)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

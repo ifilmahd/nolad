@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitLucky Admin - Verify Entries</title>
+    <style>
+        /* Admin page styling - Fallout-inspired but more functional */
+        body {
+            background-color: #175B65;
+            color: #F5F5F0;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #0E3D44;
+            border-bottom: 2px solid #E6B143;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            color: #E6B143;
+            margin: 0;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+        }
+        nav {
+            display: flex;
+            gap: 1rem;
+        }
+        nav a {
+            color: #F5F5F0;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid #E6B143;
+            border-radius: 3px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        nav a:hover {
+            background-color: #E6B143;
+            color: #0E3D44;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #0E3D44;
+            border: 2px solid #E6B143;
+            border-radius: 5px;
+            flex-grow: 1;
+        }
+        h2 {
+            color: #E6B143;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .alert {
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .alert-success {
+            background-color: #28a745;
+        }
+        .alert-danger {
+            background-color: #dc3545;
+        }
+        .alert-warning {
+            background-color: #ffc107;
+            color: #0E3D44;
+        }
+        .alert-info {
+            background-color: #17a2b8;
+        }
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .filter-btn {
+            padding: 0.5rem 1.5rem;
+            border: 1px solid #E6B143;
+            background-color: transparent;
+            color: #F5F5F0;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .filter-btn:hover {
+            background-color: rgba(230, 177, 67, 0.2);
+        }
+        .filter-btn.active {
+            background-color: #E6B143;
+            color: #0E3D44;
+        }
+        .entries-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+            background-color: #175B65;
+            border: 1px solid #E6B143;
+        }
+        .entries-table th {
+            background-color: #0E3D44;
+            border-bottom: 2px solid #E6B143;
+            padding: 0.8rem;
+            text-align: left;
+        }
+        .entries-table td {
+            padding: 0.8rem;
+            border-bottom: 1px solid rgba(230, 177, 67, 0.3);
+        }
+        .txid {
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 3px;
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-size: 0.8rem;
+            border: none;
+            font-family: 'Courier New', monospace;
+        }
+        .btn-primary {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            color: #0E3D44;
+        }
+        .details-btn {
+            background-color: #17a2b8;
+            color: white;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .status-verified {
+            background-color: #28a745;
+            color: white;
+        }
+        .status-pending {
+            background-color: #ffc107;
+            color: #0E3D44;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #175B65;
+            border: 2px solid #E6B143;
+            border-radius: 5px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            color: #E6B143;
+            cursor: pointer;
+        }
+        .entry-detail {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(230, 177, 67, 0.3);
+        }
+        .entry-detail h4 {
+            margin: 0;
+            margin-bottom: 0.5rem;
+            color: #E6B143;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #E6B143;
+        }
+        .form-group textarea {
+            width: 100%;
+            padding: 0.5rem;
+            background-color: #0E3D44;
+            color: #F5F5F0;
+            border: 1px solid #E6B143;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            min-height: 80px;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+        .no-entries-msg {
+            text-align: center;
+            padding: 2rem;
+            background-color: #175B65;
+            border: 1px solid #E6B143;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BitLucky Admin</h1>
+        <nav>
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_entries') }}">Verify Entries</a>
+            <a href="{{ url_for('admin_faqs') }}">Manage FAQs</a>
+            <a href="{{ url_for('admin_packages') }}">Manage Packages</a>
+            <a href="{{ url_for('admin_content') }}">Site Content</a>
+            <a href="{{ url_for('admin_logout') }}">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <h2>Raffle Entry Verification</h2>
+        
+        <div class="filters">
+            <a href="{{ url_for('admin_entries') }}" class="filter-btn {% if filter_active == 'all' %}active{% endif %}">
+                All Entries
+            </a>
+            <a href="{{ url_for('admin_entries', filter='pending') }}" class="filter-btn {% if filter_active == 'pending' %}active{% endif %}">
+                Pending
+            </a>
+            <a href="{{ url_for('admin_entries', filter='verified') }}" class="filter-btn {% if filter_active == 'verified' %}active{% endif %}">
+                Verified
+            </a>
+        </div>
+
+        {% if entries %}
+            <table class="entries-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Package</th>
+                        <th>Email</th>
+                        <th>BTC Wallet</th>
+                        <th>TXID</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in entries %}
+                        <tr>
+                            <td>{{ entry.created_at.strftime('%m/%d/%Y %H:%M') }}</td>
+                            <td>{{ entry.package.name }}</td>
+                            <td>{{ entry.email }}</td>
+                            <td class="txid">{{ entry.btc_wallet }}</td>
+                            <td class="txid">{{ entry.txid }}</td>
+                            <td>{{ "%.8f"|format(entry.btc_amount) }} BTC</td>
+                            <td>
+                                {% if entry.is_verified %}
+                                    <span class="status-badge status-verified">Verified</span>
+                                {% else %}
+                                    <span class="status-badge status-pending">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td class="actions">
+                                <button class="btn details-btn" onclick="showDetails('{{ entry.id }}', '{{ entry.email }}', '{{ entry.btc_wallet }}', '{{ entry.txid }}', '{{ entry.package.name }}', '{{ "%.8f"|format(entry.btc_amount) }}', '{{ entry.btc_price }}', '{{ entry.verification_notes or '' }}', {{ 'true' if entry.is_verified else 'false' }})">Details</button>
+                                
+                                {% if not entry.is_verified %}
+                                    <form action="{{ url_for('admin_entries') }}" method="POST" style="display: inline;">
+                                        <input type="hidden" name="action" value="verify">
+                                        <input type="hidden" name="id" value="{{ entry.id }}">
+                                        <button type="submit" class="btn btn-primary">Verify</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="no-entries-msg">
+                <p>No entries found matching the selected filter.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Entry Details Modal -->
+    <div id="entryModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h3 style="color: #E6B143; margin-top: 0;">Entry Details</h3>
+            
+            <div class="entry-detail">
+                <h4>Package</h4>
+                <p id="modalPackage"></p>
+            </div>
+            
+            <div class="entry-detail">
+                <h4>Email</h4>
+                <p id="modalEmail"></p>
+            </div>
+            
+            <div class="entry-detail">
+                <h4>Bitcoin Wallet</h4>
+                <p id="modalWallet" style="word-break: break-all; font-family: monospace;"></p>
+            </div>
+            
+            <div class="entry-detail">
+                <h4>Transaction ID (TXID)</h4>
+                <p id="modalTxid" style="word-break: break-all; font-family: monospace;"></p>
+                <a id="blockExplorerLink" href="#" target="_blank" style="color: #E6B143; display: block; margin-top: 0.5rem;">View on Block Explorer</a>
+            </div>
+            
+            <div class="entry-detail">
+                <h4>Bitcoin Amount</h4>
+                <p id="modalAmount"></p>
+            </div>
+            
+            <div class="entry-detail">
+                <h4>Bitcoin Price at Time of Purchase</h4>
+                <p id="modalBtcPrice"></p>
+            </div>
+            
+            <div class="entry-detail">
+                <h4>Verification Status</h4>
+                <p id="modalStatus"></p>
+            </div>
+            
+            <form id="verificationForm" action="{{ url_for('admin_entries') }}" method="POST">
+                <input type="hidden" name="id" id="modalEntryId">
+                
+                <div class="form-group">
+                    <label for="verification_notes">Verification Notes</label>
+                    <textarea name="verification_notes" id="modalNotes"></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <div>
+                        <button type="submit" name="action" value="verify" class="btn btn-primary" id="verifyBtn">Mark as Verified</button>
+                        <button type="submit" name="action" value="reject" class="btn btn-danger" id="rejectBtn">Mark as Rejected</button>
+                    </div>
+                    <button type="button" class="btn" onclick="closeModal()">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showDetails(id, email, wallet, txid, packageName, amount, btcPrice, notes, isVerified) {
+            document.getElementById('modalEntryId').value = id;
+            document.getElementById('modalEmail').textContent = email;
+            document.getElementById('modalWallet').textContent = wallet;
+            document.getElementById('modalTxid').textContent = txid;
+            document.getElementById('modalPackage').textContent = packageName;
+            document.getElementById('modalAmount').textContent = amount + ' BTC';
+            document.getElementById('modalBtcPrice').textContent = '$' + parseFloat(btcPrice).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('modalNotes').value = notes;
+            
+            // Update block explorer link
+            // Using Blockchain.com as an example - could be other explorers as well
+            document.getElementById('blockExplorerLink').href = 'https://www.blockchain.com/explorer/transactions/btc/' + txid;
+            
+            if (isVerified) {
+                document.getElementById('modalStatus').textContent = 'Verified';
+                document.getElementById('modalStatus').style.color = '#28a745';
+                // Hide verify button if already verified
+                document.getElementById('verifyBtn').style.display = 'none';
+                document.getElementById('rejectBtn').style.display = 'inline-block';
+            } else {
+                document.getElementById('modalStatus').textContent = 'Pending Verification';
+                document.getElementById('modalStatus').style.color = '#ffc107';
+                // Show verify button if pending
+                document.getElementById('verifyBtn').style.display = 'inline-block';
+                document.getElementById('rejectBtn').style.display = 'inline-block';
+            }
+            
+            document.getElementById('entryModal').style.display = 'flex';
+        }
+        
+        function closeModal() {
+            document.getElementById('entryModal').style.display = 'none';
+        }
+        
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            let modal = document.getElementById('entryModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

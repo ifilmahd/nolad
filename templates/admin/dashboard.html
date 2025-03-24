@@ -145,6 +145,7 @@
         <h1>BitLucky Admin</h1>
         <nav>
             <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_entries') }}">Verify Entries</a>
             <a href="{{ url_for('admin_faqs') }}">Manage FAQs</a>
             <a href="{{ url_for('admin_packages') }}">Manage Packages</a>
             <a href="{{ url_for('admin_content') }}">Site Content</a>
@@ -170,24 +171,69 @@
 
         <div class="dashboard-stats">
             <div class="stat-card">
-                <h3>Active Raffle</h3>
-                <p>30 Days</p>
+                <h3>Total Entries</h3>
+                <p>{{ entry_count }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Verified Entries</h3>
+                <p>{{ verified_count }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Pending Verification</h3>
+                <p>{{ pending_count }}</p>
+                {% if pending_count > 0 %}
+                <a href="{{ url_for('admin_entries', filter='pending') }}" style="color: #E6B143; display: block; margin-top: 0.5rem;">Review Now</a>
+                {% endif %}
             </div>
             <div class="stat-card">
                 <h3>Raffle Prize</h3>
                 <p>0.1 BTC</p>
             </div>
-            <div class="stat-card">
-                <h3>FAQ Entries</h3>
-                <p>5</p>
-            </div>
-            <div class="stat-card">
-                <h3>Raffle Packages</h3>
-                <p>3</p>
-            </div>
         </div>
 
+        {% if recent_entries %}
+        <div style="margin-top: 2rem; margin-bottom: 2rem;">
+            <h3 style="color: #E6B143; text-transform: uppercase; text-align: center; margin-bottom: 1rem;">Recent Entries</h3>
+            <table style="width: 100%; border-collapse: collapse; background-color: #175B65; border: 1px solid #E6B143;">
+                <thead>
+                    <tr style="background-color: #0E3D44; border-bottom: 2px solid #E6B143;">
+                        <th style="padding: 0.8rem; text-align: left;">Date</th>
+                        <th style="padding: 0.8rem; text-align: left;">Package</th>
+                        <th style="padding: 0.8rem; text-align: left;">TXID</th>
+                        <th style="padding: 0.8rem; text-align: right;">Amount BTC</th>
+                        <th style="padding: 0.8rem; text-align: center;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in recent_entries %}
+                    <tr style="border-bottom: 1px solid rgba(230, 177, 67, 0.3);">
+                        <td style="padding: 0.8rem;">{{ entry.created_at.strftime('%m/%d/%Y') }}</td>
+                        <td style="padding: 0.8rem;">{{ entry.package.name }}</td>
+                        <td style="padding: 0.8rem; font-family: monospace; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">{{ entry.txid[:10] }}...</td>
+                        <td style="padding: 0.8rem; text-align: right;">{{ "%.8f"|format(entry.btc_amount) }}</td>
+                        <td style="padding: 0.8rem; text-align: center;">
+                            {% if entry.is_verified %}
+                            <span style="background-color: #28a745; color: white; padding: 0.2rem 0.5rem; border-radius: 3px;">Verified</span>
+                            {% else %}
+                            <span style="background-color: #ffc107; color: #0E3D44; padding: 0.2rem 0.5rem; border-radius: 3px;">Pending</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div style="text-align: center; margin-top: 1rem;">
+                <a href="{{ url_for('admin_entries') }}" style="display: inline-block; padding: 0.5rem 1rem; background-color: #E6B143; color: #0E3D44; text-decoration: none; border-radius: 3px; font-weight: bold; text-transform: uppercase;">View All Entries</a>
+            </div>
+        </div>
+        {% endif %}
+        
         <div class="admin-links">
+            <div class="admin-link-card">
+                <h3>Verify Entries</h3>
+                <p>Verify and manage Bitcoin payment transactions for raffle entries.</p>
+                <a href="{{ url_for('admin_entries') }}">Manage Entries</a>
+            </div>
             <div class="admin-link-card">
                 <h3>Manage FAQs</h3>
                 <p>Add, edit, or remove FAQ entries that appear on the FAQ page.</p>
@@ -202,11 +248,6 @@
                 <h3>Site Content</h3>
                 <p>Edit the main content sections displayed throughout the site.</p>
                 <a href="{{ url_for('admin_content') }}">Edit Content</a>
-            </div>
-            <div class="admin-link-card">
-                <h3>View Site</h3>
-                <p>See how your site appears to visitors.</p>
-                <a href="{{ url_for('index') }}">Visit Site</a>
             </div>
         </div>
     </div>
