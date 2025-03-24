@@ -213,6 +213,10 @@ def transaction_confirmation():
     btc_amount = request.args.get('btc_amount', '0.0')
     entries = request.args.get('entries', '0')
     
+    # Debug info
+    print(f"TRANSACTION CONFIRMATION - email: {email}, txid: {txid}, btc_amount: {btc_amount}, entries: {entries}")
+    print(f"TRANSACTION CONFIRMATION - All args: {request.args}")
+    
     # Get wallet content from database
     wallet_content = {
         'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
@@ -283,11 +287,13 @@ def packages():
             db.session.commit()
             
             # Redirect to the transaction confirmation page
-            return redirect(url_for('transaction_confirmation', 
+            redirect_url = url_for('transaction_confirmation', 
                                    email=email,
                                    txid=txid,
                                    btc_amount=btc_amount,
-                                   entries=package.entries))
+                                   entries=package.entries)
+            print(f"REDIRECT DEBUG - Redirecting to: {redirect_url}")
+            return redirect(redirect_url)
         except Exception as e:
             # If there's an error saving to the database
             db.session.rollback()
