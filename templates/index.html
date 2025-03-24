@@ -24,7 +24,7 @@
         <div class="container">
             <h1 class="hero-title">BitLucky</h1>
             <p class="hero-tagline">Win Bitcoin Anonymously</p>
-            <a href="{{ url_for('packages') }}" class="cta-button">Enter Now</a>
+            <a href="{{ url_for('package_detail', package_id=1) }}" class="cta-button">Enter Now</a>
         </div>
     </header>
 
@@ -57,7 +57,7 @@
                     <div class="package-content">
                         <p class="package-price">$5</p>
                         <p class="package-entries">3 entries</p>
-                        <a href="{{ url_for('packages') }}" class="buy-button">Buy Now</a>
+                        <a href="{{ url_for('package_detail', package_id=1) }}" class="buy-button">Buy Now</a>
                     </div>
                 </div>
 
@@ -69,7 +69,7 @@
                     <div class="package-content">
                         <p class="package-price">$15</p>
                         <p class="package-entries">10 entries</p>
-                        <a href="{{ url_for('packages') }}" class="buy-button">Buy Now</a>
+                        <a href="{{ url_for('package_detail', package_id=2) }}" class="buy-button">Buy Now</a>
                     </div>
                 </div>
 
@@ -81,7 +81,7 @@
                     <div class="package-content">
                         <p class="package-price">$30</p>
                         <p class="package-entries">25 entries</p>
-                        <a href="{{ url_for('packages') }}" class="buy-button">Buy Now</a>
+                        <a href="{{ url_for('package_detail', package_id=3) }}" class="buy-button">Buy Now</a>
                     </div>
                 </div>
             </div>
