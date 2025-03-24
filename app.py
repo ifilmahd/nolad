@@ -69,9 +69,42 @@ def contact():
     return render_template('contact.html')
 
 # Package routes
-@app.route('/packages')
+@app.route('/packages', methods=['GET', 'POST'])
 def packages():
-    """Display all available packages"""
+    """Display all available packages or process entry form submission"""
+    if request.method == 'POST':
+        # Process the entry form submission
+        package_id = request.form.get('package_id')
+        email = request.form.get('email')
+        btc_wallet = request.form.get('btc_wallet')
+        txid = request.form.get('txid')
+        btc_amount = request.form.get('btc_amount')
+        
+        # Basic validation
+        if not all([package_id, email, btc_wallet, txid]):
+            flash('All fields are required. Please try again.', 'warning')
+            return redirect(url_for('package_detail', package_id=package_id))
+        
+        # Check for valid Bitcoin wallet address (basic format check)
+        if not (btc_wallet.startswith('1') or btc_wallet.startswith('3') or btc_wallet.startswith('bc1')):
+            flash('Please enter a valid Bitcoin wallet address.', 'warning')
+            return redirect(url_for('package_detail', package_id=package_id))
+        
+        # Store the entry details in session for now
+        # In a real application, this would be stored in the database
+        session['entry_submitted'] = True
+        session['entry_email'] = email
+        session['entry_wallet'] = btc_wallet
+        session['entry_txid'] = txid
+        
+        # Get the package details
+        package = Package.query.get_or_404(package_id)
+        
+        # Show success message
+        flash(f'Thank you for your entry! {package.entries} entries have been added to the current raffle. Good luck!', 'success')
+        return redirect(url_for('index'))
+    
+    # GET request - display all packages
     packages = Package.query.filter_by(is_active=True).all()
     return render_template('packages.html', packages=packages)
 
