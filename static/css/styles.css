@@ -376,3 +376,28 @@ a:hover {
         align-items: center;
     }
 }
+
+/* Onion verification notification */
+.onion-verify {
+    background-color: #0E3D44;
+    border: 2px solid var(--color-accent);
+    color: var(--color-text);
+    padding: 10px 15px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+.onion-verify strong {
+    color: var(--color-accent);
+    font-weight: bold;
+}
+
+/* Logo header styling */
+.logo-header {
+    padding: var(--spacing-md) 0;
+    background-color: var(--color-dark);
+    border-bottom: var(--border-style);
+    text-align: center;
+}
