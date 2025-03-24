@@ -80,20 +80,72 @@ def faq():
 @app.route('/about')
 def about():
     """Render the About page with information about BitLucky"""
-    return render_template('about.html')
+    # Get wallet content from database
+    wallet_content = {
+        'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
+        'prize_amount': '0.1',  # Default
+        'next_raffle_date': 'April 23, 2025'  # Default
+    }
+    
+    # Override with values from database if they exist
+    for key in wallet_content.keys():
+        content = SiteContent.query.filter_by(section='wallet', key=key).first()
+        if content:
+            wallet_content[key] = content.value
+            
+    return render_template('about.html', wallet_content=wallet_content)
 
 # Additional routes for placeholder pages
 @app.route('/terms')
 def terms():
-    return render_template('terms.html')
+    # Get wallet content from database
+    wallet_content = {
+        'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
+        'prize_amount': '0.1',  # Default
+        'next_raffle_date': 'April 23, 2025'  # Default
+    }
+    
+    # Override with values from database if they exist
+    for key in wallet_content.keys():
+        content = SiteContent.query.filter_by(section='wallet', key=key).first()
+        if content:
+            wallet_content[key] = content.value
+            
+    return render_template('terms.html', wallet_content=wallet_content)
 
 @app.route('/privacy')
 def privacy():
-    return render_template('privacy.html')
+    # Get wallet content from database
+    wallet_content = {
+        'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
+        'prize_amount': '0.1',  # Default
+        'next_raffle_date': 'April 23, 2025'  # Default
+    }
+    
+    # Override with values from database if they exist
+    for key in wallet_content.keys():
+        content = SiteContent.query.filter_by(section='wallet', key=key).first()
+        if content:
+            wallet_content[key] = content.value
+            
+    return render_template('privacy.html', wallet_content=wallet_content)
 
 @app.route('/contact')
 def contact():
-    return render_template('contact.html')
+    # Get wallet content from database
+    wallet_content = {
+        'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
+        'prize_amount': '0.1',  # Default
+        'next_raffle_date': 'April 23, 2025'  # Default
+    }
+    
+    # Override with values from database if they exist
+    for key in wallet_content.keys():
+        content = SiteContent.query.filter_by(section='wallet', key=key).first()
+        if content:
+            wallet_content[key] = content.value
+            
+    return render_template('contact.html', wallet_content=wallet_content)
 
 # Package routes
 @app.route('/packages', methods=['GET', 'POST'])
