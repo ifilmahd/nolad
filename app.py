@@ -202,6 +202,34 @@ def contact():
             
     return render_template('contact.html', wallet_content=wallet_content)
 
+@app.route('/transaction-confirmation')
+def transaction_confirmation():
+    """Display transaction confirmation page after entry submission"""
+    email = request.args.get('email', '')
+    txid = request.args.get('txid', '')
+    btc_amount = request.args.get('btc_amount', '0.0')
+    entries = request.args.get('entries', '0')
+    
+    # Get wallet content from database
+    wallet_content = {
+        'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
+        'prize_amount': '0.1',  # Default
+        'next_raffle_date': 'April 23, 2025'  # Default
+    }
+    
+    # Override with values from database if they exist
+    for key in wallet_content.keys():
+        content = SiteContent.query.filter_by(section='wallet', key=key).first()
+        if content:
+            wallet_content[key] = content.value
+    
+    return render_template('transaction_confirmation.html', 
+                          email=email,
+                          txid=txid,
+                          btc_amount=btc_amount,
+                          entries=entries,
+                          wallet_content=wallet_content)
+
 # Package routes
 @app.route('/packages', methods=['GET', 'POST'])
 def packages():
@@ -247,13 +275,12 @@ def packages():
             db.session.add(entry)
             db.session.commit()
             
-            # Store minimal entry info in session for confirmation page
-            session['entry_submitted'] = True
-            session['entry_email'] = email
-            
-            # Show success message
-            flash(f'Thank you for your entry! {package.entries} entries have been added to the current raffle. Your transaction will be verified shortly. Good luck!', 'success')
-            return redirect(url_for('index'))
+            # Redirect to the transaction confirmation page
+            return redirect(url_for('transaction_confirmation', 
+                                   email=email,
+                                   txid=txid,
+                                   btc_amount=btc_amount,
+                                   entries=package.entries))
         except Exception as e:
             # If there's an error saving to the database
             db.session.rollback()

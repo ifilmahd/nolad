@@ -608,3 +608,118 @@ a:hover {
     font-size: 1.1rem;
     color: var(--color-light-alt);
 }
+
+/* Transaction Confirmation Page Styles */
+.confirmation-section {
+    padding: 2rem 0;
+}
+
+.confirmation-card {
+    background-color: #0E3D44;
+    border: 2px solid #E6B143;
+    border-radius: 5px;
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.confirmation-icon {
+    font-size: 3rem;
+    color: #28a745;
+    margin-bottom: 1rem;
+}
+
+.confirmation-card h2 {
+    color: #E6B143;
+    margin-bottom: 1rem;
+}
+
+.confirmation-message {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.transaction-details {
+    background-color: #175B65;
+    border-radius: 5px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.transaction-details h3 {
+    color: #E6B143;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.detail-item {
+    display: flex;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(230, 177, 67, 0.2);
+}
+
+.detail-label {
+    flex: 1;
+    font-weight: bold;
+    color: #E6B143;
+}
+
+.detail-value {
+    flex: 2;
+}
+
+.txid {
+    font-family: 'Courier New', monospace;
+    word-break: break-all;
+}
+
+.verification-info {
+    background-color: #175B65;
+    border-radius: 5px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.verification-info h3 {
+    color: #E6B143;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.verification-info p {
+    margin-bottom: 0.8rem;
+}
+
+.confirmation-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.primary-button {
+    padding: 0.8rem 1.5rem;
+    background-color: #E6B143;
+    color: #0E3D44;
+    border: none;
+    border-radius: 3px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.secondary-button {
+    padding: 0.8rem 1.5rem;
+    background-color: transparent;
+    color: #F5F5F0;
+    border: 1px solid #E6B143;
+    border-radius: 3px;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: bold;
+}
