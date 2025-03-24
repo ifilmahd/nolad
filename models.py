@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # Create database instance
 db = SQLAlchemy()
@@ -20,3 +21,32 @@ class FAQ(db.Model):
     question = db.Column(db.String(255), nullable=False)
     answer = db.Column(db.Text, nullable=False)
     order = db.Column(db.Integer, default=0)  # For ordering the FAQs
+
+class Admin(db.Model):
+    """Model for admin users"""
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), unique=True, nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
+    
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+        
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+class Package(db.Model):
+    """Model for raffle entry packages"""
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    entries = db.Column(db.Integer, nullable=False)  # Number of raffle entries
+    description = db.Column(db.Text, nullable=True)
+    is_active = db.Column(db.Boolean, default=True)
+    
+class SiteContent(db.Model):
+    """Model for editable site content"""
+    id = db.Column(db.Integer, primary_key=True)
+    section = db.Column(db.String(64), nullable=False)  # e.g. 'hero', 'footer', etc.
+    key = db.Column(db.String(64), nullable=False)  # e.g. 'title', 'subtitle', etc.
+    value = db.Column(db.Text, nullable=False)
+    description = db.Column(db.String(255), nullable=True)  # For admin UI
