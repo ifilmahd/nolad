@@ -86,6 +86,23 @@ def usd_to_btc(usd_amount):
     btc_amount = usd_amount / btc_price
     return btc_amount
 
+# Function to get wallet content from database
+def get_wallet_content():
+    """Get wallet content from database"""
+    wallet_content = {
+        'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
+        'prize_amount': '0.1',  # Default
+        'next_raffle_date': 'April 23, 2025'  # Default
+    }
+    
+    # Override with values from database if they exist
+    for key in wallet_content.keys():
+        content = SiteContent.query.filter_by(section='wallet', key=key).first()
+        if content:
+            wallet_content[key] = content.value
+            
+    return wallet_content
+
 # Admin login required decorator
 def admin_required(f):
     @wraps(f)
@@ -205,9 +222,62 @@ def contact():
             
     return render_template('contact.html', wallet_content=wallet_content)
 
-@app.route('/transaction-confirmation')
+@app.route('/transaction_confirmation', methods=['GET', 'POST'])
 def transaction_confirmation():
     """Display transaction confirmation page after entry submission"""
+    if request.method == 'POST':
+        email = request.form.get('email', '')
+        txid = request.form.get('txid', '')
+        btc_amount = request.form.get('btc_amount', '0.0')
+        entries = request.form.get('entries', '0')
+        package_id = request.form.get('package_id', '')
+        btc_wallet = request.form.get('btc_wallet', '')
+        btc_price = request.form.get('btc_price', '0.0')
+        
+        print(f"CONFIRMATION POST - email: {email}, txid: {txid}, wallet: {btc_wallet}")
+        
+        # Process the entry form submission
+        if all([package_id, email, btc_wallet, txid, btc_amount]):
+            # Get the package details
+            package = Package.query.get_or_404(package_id)
+            
+            try:
+                # Create new entry in the database
+                entry = Entry(
+                    email=email,
+                    btc_wallet=btc_wallet,
+                    txid=txid,
+                    btc_amount=float(btc_amount),
+                    usd_amount=package.price,
+                    btc_price=float(btc_price),
+                    package_id=package.id,
+                    entry_count=package.entries,
+                    is_verified=False  # Admin will verify later
+                )
+                
+                # Add entry to database
+                db.session.add(entry)
+                db.session.commit()
+                
+                # Return the confirmation page
+                return render_template('transaction_confirmation.html', 
+                                      email=email,
+                                      txid=txid,
+                                      btc_amount=btc_amount,
+                                      entries=package.entries,
+                                      wallet_content=get_wallet_content())
+            except Exception as e:
+                print(f"Error saving entry: {str(e)}")
+                flash('There was an error processing your entry. Please try again or contact support.', 'danger')
+                return redirect(url_for('package_detail', package_id=package_id))
+        else:
+            flash('All fields are required. Please try again.', 'warning')
+            if package_id:
+                return redirect(url_for('package_detail', package_id=package_id))
+            else:
+                return redirect(url_for('packages'))
+    
+    # GET request
     email = request.args.get('email', '')
     txid = request.args.get('txid', '')
     btc_amount = request.args.get('btc_amount', '0.0')
@@ -286,12 +356,10 @@ def packages():
             db.session.add(entry)
             db.session.commit()
             
-            # Redirect to the transaction confirmation page
-            redirect_url = url_for('transaction_confirmation', 
-                                   email=email,
-                                   txid=txid,
-                                   btc_amount=btc_amount,
-                                   entries=package.entries)
+            # Redirect to the transaction confirmation page using direct URL
+            # Build the URL manually to bypass Flask's url_for which might be causing issues
+            confirmation_params = f"?email={email}&txid={txid}&btc_amount={btc_amount}&entries={package.entries}"
+            redirect_url = f"/transaction_confirmation{confirmation_params}"
             print(f"REDIRECT DEBUG - Redirecting to: {redirect_url}")
             return redirect(redirect_url)
         except Exception as e:

@@ -98,11 +98,12 @@
                     
                     <div class="entry-form">
                         <h3>Enter Your Details</h3>
-                        <form action="{{ url_for('packages') }}" method="post">
+                        <form action="{{ url_for('transaction_confirmation') }}" method="post">
                             <input type="hidden" name="package_id" value="{{ package.id }}">
                             <input type="hidden" name="btc_amount" value="{{ btc_amount }}">
                             <input type="hidden" name="btc_price" value="{{ btc_price }}">
                             <input type="hidden" name="usd_amount" value="{{ package.price }}">
+                            <input type="hidden" name="entries" value="{{ package.entries }}">
                             
                             <div class="form-group">
                                 <label for="email">Email*:</label>
