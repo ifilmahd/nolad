@@ -1,29 +1,84 @@
 import os
 import requests
 import json
+import time
 from decimal import Decimal
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from models import db, FAQ, Admin, Package, SiteContent, Raffle
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
+# Global cache for Bitcoin price to reduce API calls
+btc_price_cache = {
+    'price': None,
+    'timestamp': 0,
+    'cache_duration': 300  # Cache duration in seconds (5 minutes)
+}
+
 # Create the app
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev_secret_key")
 
 # Function to get the current Bitcoin price in USD
-def get_bitcoin_price():
+def get_bitcoin_price(force_refresh=False):
+    """Get the current Bitcoin price using multiple APIs for redundancy with caching"""
+    global btc_price_cache
+    
+    current_time = time.time()
+    # Check if we have a valid cached price
+    if not force_refresh and btc_price_cache['price'] and (current_time - btc_price_cache['timestamp'] < btc_price_cache['cache_duration']):
+        return btc_price_cache['price']
+    
+    # No valid cache, fetch new price
     try:
-        response = requests.get('https://api.coindesk.com/v1/bpi/currentprice/USD.json')
+        # Try CoinGecko API first
+        response = requests.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')
         data = response.json()
-        return float(data['bpi']['USD']['rate'].replace(',', ''))
+        price = float(data['bitcoin']['usd'])
+        
+        # Update cache
+        btc_price_cache['price'] = price
+        btc_price_cache['timestamp'] = current_time
+        
+        return price
     except Exception as e:
-        # If API call fails, return a fallback price
-        print(f"Error getting Bitcoin price: {e}")
-        return 65000.00  # Fallback price in case API is down
+        print(f"Error getting Bitcoin price from CoinGecko: {e}")
+        
+        # If CoinGecko fails, try Coindesk as backup
+        try:
+            response = requests.get('https://api.coindesk.com/v1/bpi/currentprice/USD.json')
+            data = response.json()
+            price = float(data['bpi']['USD']['rate'].replace(',', ''))
+            
+            # Update cache
+            btc_price_cache['price'] = price
+            btc_price_cache['timestamp'] = current_time
+            
+            return price
+        except Exception as e:
+            # If both APIs fail, try Binance as a last resort
+            try:
+                response = requests.get('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT')
+                data = response.json()
+                price = float(data['price'])
+                
+                # Update cache
+                btc_price_cache['price'] = price
+                btc_price_cache['timestamp'] = current_time
+                
+                return price
+            except Exception as e:
+                print(f"All APIs failed. Error getting Bitcoin price: {e}")
+                # If all APIs fail, use cached value if exists, otherwise fallback price
+                if btc_price_cache['price']:
+                    print("Using last cached Bitcoin price")
+                    return btc_price_cache['price']
+                else:
+                    return 65000.00  # Fallback price in case all APIs are down
 
 # Function to convert USD to BTC
 def usd_to_btc(usd_amount):
+    """Convert USD to BTC based on current exchange rate"""
     btc_price = get_bitcoin_price()
     btc_amount = usd_amount / btc_price
     return btc_amount
@@ -525,8 +580,25 @@ def admin_content():
         
         return redirect(url_for('admin_content'))
     
+    # Get current Bitcoin price for display
+    current_btc_price = get_bitcoin_price()
+    
     contents = SiteContent.query.all()
-    return render_template('admin/content.html', contents=contents)
+    return render_template('admin/content.html', contents=contents, btc_price=current_btc_price)
+
+@app.route('/eng/refresh-btc-price')
+@admin_required
+def admin_refresh_btc_price():
+    """Admin route to force refresh the Bitcoin price cache"""
+    try:
+        # Force refresh the Bitcoin price
+        new_price = get_bitcoin_price(force_refresh=True)
+        flash(f'Bitcoin price refreshed successfully. Current price: ${new_price:,.2f}', 'success')
+    except Exception as e:
+        flash(f'Error refreshing Bitcoin price: {str(e)}', 'danger')
+    
+    # Redirect back to the content management page
+    return redirect(url_for('admin_content'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

@@ -203,6 +203,23 @@
         {% endwith %}
 
         <h2>Manage Site Content</h2>
+        
+        <div class="content-section">
+            <h3>Bitcoin Price Information</h3>
+            <div class="content-item">
+                <div class="item-header">
+                    <h4>Current Bitcoin Price</h4>
+                </div>
+                <div class="item-description">This is the current Bitcoin price used to calculate entry costs</div>
+                <div class="item-value">${{ "{:,.2f}".format(btc_price) }}</div>
+                <div style="margin-top: 1rem; text-align: center;">
+                    <a href="{{ url_for('admin_refresh_btc_price') }}" class="btn btn-primary">Refresh Bitcoin Price</a>
+                </div>
+                <div class="item-description" style="margin-top: 1rem;">
+                    Note: Bitcoin price data is cached for 5 minutes to reduce API calls. Use the refresh button if you need the latest price.
+                </div>
+            </div>
+        </div>
 
         {% if contents %}
             {% set sections = {} %}
