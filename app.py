@@ -746,6 +746,33 @@ def admin_refresh_btc_price():
     # Redirect back to the content management page
     return redirect(url_for('admin_content'))
 
+@app.route('/eng/reset-countdown')
+@admin_required
+def admin_reset_countdown():
+    """Admin route to manually reset the countdown timer"""
+    try:
+        # Get the current next_raffle_date content
+        next_raffle_content = SiteContent.query.filter_by(section='wallet', key='next_raffle_date').first()
+        
+        if next_raffle_content:
+            # Calculate a new date 30 days from now
+            from datetime import datetime, timedelta
+            new_date = datetime.now() + timedelta(days=30)
+            formatted_new_date = new_date.strftime("%B %d, %Y")
+            
+            # Update the next raffle date
+            next_raffle_content.value = formatted_new_date
+            db.session.commit()
+            
+            flash(f'Countdown reset successfully! New raffle date: {formatted_new_date}', 'success')
+        else:
+            flash('Could not find next raffle date content in database.', 'danger')
+    except Exception as e:
+        flash(f'Error resetting countdown: {str(e)}', 'danger')
+    
+    # Redirect back to the content management page
+    return redirect(url_for('admin_content'))
+
 @app.route('/eng/entries', methods=['GET', 'POST'])
 @admin_required
 def admin_entries():

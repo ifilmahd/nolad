@@ -220,6 +220,22 @@
                 </div>
             </div>
         </div>
+        
+        <div class="content-section">
+            <h3>Raffle Countdown Timer</h3>
+            <div class="content-item">
+                <div class="item-header">
+                    <h4>Reset Countdown Timer</h4>
+                </div>
+                <div class="item-description">Use this option to manually reset the countdown timer to 30 days from now. This will update the next raffle date automatically.</div>
+                <div style="margin-top: 1rem; text-align: center;">
+                    <a href="{{ url_for('admin_reset_countdown') }}" class="btn btn-primary">Reset Countdown Timer</a>
+                </div>
+                <div class="item-description" style="margin-top: 1rem;">
+                    Note: The countdown timer automatically resets every 30 days. Only use this option if you need to manually adjust the raffle schedule.
+                </div>
+            </div>
+        </div>
 
         {% if contents %}
             {% set sections = {} %}
