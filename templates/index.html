@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitLucky - Win Bitcoin Anonymously</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="container">
+            <h1 class="hero-title">BitLucky</h1>
+            <p class="hero-tagline">Win Bitcoin Anonymously</p>
+            <a href="#" class="cta-button">Enter Now</a>
+        </div>
+    </header>
+
+    <!-- Wallet Centerpiece -->
+    <section class="wallet-centerpiece">
+        <div class="container">
+            <h2 class="section-title">This Month's Bitcoin Wallet</h2>
+            <div class="wallet-display">
+                <div class="wallet-image">
+                    <img src="{{ url_for('static', filename='images/bitcoin-wallet.svg') }}" alt="Bitcoin Wallet" width="300" height="300">
+                </div>
+                <div class="wallet-info">
+                    <div class="balance">0.1 BTC</div>
+                    <div class="raffle-date">Next Raffle: April 23, 2025</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Raffle Packages -->
+    <section class="raffle-packages">
+        <div class="container">
+            <h2 class="section-title">Choose Your Package</h2>
+            <div class="packages-container">
+                <!-- Bronze Package -->
+                <div class="package-card">
+                    <div class="package-header bronze">
+                        <h3>Bronze</h3>
+                    </div>
+                    <div class="package-content">
+                        <p class="package-price">$5</p>
+                        <p class="package-entries">3 entries</p>
+                        <a href="#" class="buy-button">Buy Now</a>
+                    </div>
+                </div>
+
+                <!-- Silver Package -->
+                <div class="package-card">
+                    <div class="package-header silver">
+                        <h3>Silver</h3>
+                    </div>
+                    <div class="package-content">
+                        <p class="package-price">$15</p>
+                        <p class="package-entries">10 entries</p>
+                        <a href="#" class="buy-button">Buy Now</a>
+                    </div>
+                </div>
+
+                <!-- Gold Package -->
+                <div class="package-card">
+                    <div class="package-header gold">
+                        <h3>Gold</h3>
+                    </div>
+                    <div class="package-content">
+                        <p class="package-price">$30</p>
+                        <p class="package-entries">25 entries</p>
+                        <a href="#" class="buy-button">Buy Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Winner Section -->
+    <section class="winner-section">
+        <div class="container">
+            <h2 class="section-title">Last Month's Winner</h2>
+            <div class="winner-display">
+                <div class="winner-image">
+                    <img src="{{ url_for('static', filename='images/trophy.svg') }}" alt="Trophy" width="300" height="300">
+                </div>
+                <div class="winner-info">
+                    <p class="winner-id">Anonymous Winner: 1A2b3C...</p>
+                    <blockquote class="testimonial">
+                        "I never thought I'd win. BitLucky changed my life while keeping my identity safe!"
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p class="copyright">© 2025 BitLucky</p>
+                <nav class="footer-nav">
+                    <a href="#" class="footer-link">Terms & Conditions</a>
+                    <a href="#" class="footer-link">Privacy Policy</a>
+                    <a href="#" class="footer-link">Contact Us</a>
+                </nav>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
