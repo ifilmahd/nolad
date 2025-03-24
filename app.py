@@ -41,7 +41,20 @@ def admin_required(f):
 @app.route('/')
 def index():
     """Render the main page of the BitLucky raffle site"""
-    return render_template('index.html')
+    # Get wallet content from database
+    wallet_content = {
+        'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
+        'prize_amount': '0.1',  # Default
+        'next_raffle_date': 'April 23, 2025'  # Default
+    }
+    
+    # Override with values from database if they exist
+    for key in wallet_content.keys():
+        content = SiteContent.query.filter_by(section='wallet', key=key).first()
+        if content:
+            wallet_content[key] = content.value
+    
+    return render_template('index.html', wallet_content=wallet_content)
 
 @app.route('/faq')
 def faq():
@@ -123,10 +136,24 @@ def package_detail(package_id):
     # Format the Bitcoin amount to 8 decimal places (satoshi precision)
     btc_formatted = "{:.8f}".format(btc_amount)
     
+    # Get wallet address from database
+    wallet_content = {
+        'bitcoin_address': 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',  # Default
+        'prize_amount': '0.1',  # Default
+        'next_raffle_date': 'April 23, 2025'  # Default
+    }
+    
+    # Override with values from database if they exist
+    for key in wallet_content.keys():
+        content = SiteContent.query.filter_by(section='wallet', key=key).first()
+        if content:
+            wallet_content[key] = content.value
+    
     return render_template('package_detail.html', 
                           package=package, 
                           btc_price=btc_price,
-                          btc_amount=btc_formatted)
+                          btc_amount=btc_formatted,
+                          wallet_content=wallet_content)
 
 # Initialize FAQ data
 def init_faq():
@@ -229,6 +256,45 @@ def init_packages():
 def init_packages_route():
     """Initialize package data via web route"""
     return init_packages()
+
+# Initialize site content
+def init_site_content():
+    """Initialize site content data"""
+    # Only run if no site content exists yet
+    if SiteContent.query.count() == 0:
+        contents = [
+            SiteContent(
+                section="wallet", 
+                key="bitcoin_address", 
+                value="bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
+                description="Bitcoin wallet address for payments"
+            ),
+            SiteContent(
+                section="wallet", 
+                key="prize_amount", 
+                value="0.1",
+                description="Raffle prize amount in BTC"
+            ),
+            SiteContent(
+                section="wallet", 
+                key="next_raffle_date", 
+                value="April 23, 2025",
+                description="Date of the next raffle drawing"
+            )
+        ]
+        
+        for content in contents:
+            db.session.add(content)
+        
+        db.session.commit()
+        return "Site content initialized successfully!"
+    return "Site content already exists!"
+
+# Admin route to initialize site content (web route)
+@app.route('/init-content', methods=['GET'])
+def init_site_content_route():
+    """Initialize site content via web route"""
+    return init_site_content()
 
 # Admin login routes
 @app.route('/eng/login', methods=['GET', 'POST'])

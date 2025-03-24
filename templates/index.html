@@ -37,8 +37,8 @@
                     <img src="{{ url_for('static', filename='images/bitcoin-wallet.svg') }}" alt="Bitcoin Wallet" width="300" height="300">
                 </div>
                 <div class="wallet-info">
-                    <div class="balance">0.1 BTC</div>
-                    <div class="raffle-date">Next Raffle: April 23, 2025</div>
+                    <div class="balance">{{ wallet_content.prize_amount }} BTC</div>
+                    <div class="raffle-date">Next Raffle: {{ wallet_content.next_raffle_date }}</div>
                 </div>
             </div>
         </div>
