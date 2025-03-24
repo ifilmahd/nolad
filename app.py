@@ -24,9 +24,12 @@ def get_bitcoin_price(force_refresh=False):
     """Get the current Bitcoin price using multiple APIs for redundancy with caching"""
     global btc_price_cache
     
+    print(f"BTC PRICE DEBUG - Cache: {btc_price_cache}, Force Refresh: {force_refresh}")
+    
     current_time = time.time()
     # Check if we have a valid cached price
     if not force_refresh and btc_price_cache['price'] and (current_time - btc_price_cache['timestamp'] < btc_price_cache['cache_duration']):
+        print(f"BTC PRICE DEBUG - Using cached price: {btc_price_cache['price']}")
         return btc_price_cache['price']
     
     # No valid cache, fetch new price
@@ -243,6 +246,10 @@ def packages():
         btc_amount = request.form.get('btc_amount')
         usd_amount = request.form.get('usd_amount')
         btc_price = request.form.get('btc_price')
+        
+        # Debug info
+        print(f"FORM DATA - package_id: {package_id}, email: {email}, wallet: {btc_wallet}, txid: {txid}")
+        print(f"FORM DATA - btc_amount: {btc_amount}, usd_amount: {usd_amount}, btc_price: {btc_price}")
         
         # Basic validation
         if not all([package_id, email, btc_wallet, txid, btc_amount]):
