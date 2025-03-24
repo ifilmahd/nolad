@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitLucky - Raffle Packages</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        .packages-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+        
+        .package-card {
+            flex: 1;
+            min-width: 260px;
+            background-color: #0E3D44;
+            border: 2px solid #E6B143;
+            border-radius: 5px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .package-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .package-name {
+            font-size: 2rem;
+            color: #E6B143;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .package-price {
+            font-size: 2.5rem;
+            color: #F5F5F0;
+            margin-bottom: 1rem;
+        }
+        
+        .package-price .currency {
+            font-size: 1.5rem;
+            vertical-align: super;
+        }
+        
+        .package-entries {
+            font-size: 1.2rem;
+            background-color: #175B65;
+            color: #F5F5F0;
+            padding: 0.8rem;
+            margin-bottom: 1.5rem;
+            border-radius: 5px;
+        }
+        
+        .entries-highlight {
+            color: #E6B143;
+            font-weight: bold;
+            font-size: 1.4rem;
+        }
+        
+        .package-description {
+            margin-bottom: 2rem;
+            color: #BFC0BF;
+            line-height: 1.5;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background-color: #E6B143;
+            color: #0E3D44;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+        
+        .cta-button:hover {
+            background-color: #F5F5F0;
+        }
+        
+        .best-value {
+            position: absolute;
+            top: 20px;
+            right: -35px;
+            background-color: #E6B143;
+            color: #0E3D44;
+            padding: 0.5rem 3rem;
+            transform: rotate(45deg);
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .page-intro {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .page-intro h1 {
+            color: #E6B143;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .page-intro p {
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+            color: #BFC0BF;
+        }
+        
+        .flash-message {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .flash-warning {
+            background-color: #ffc107;
+            color: #333;
+        }
+        
+        .flash-success {
+            background-color: #28a745;
+            color: #fff;
+        }
+        
+        @media (max-width: 800px) {
+            .packages-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .package-card {
+                width: 100%;
+                max-width: 400px;
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>BitLucky</h1>
+            <p>Tor-compatible Bitcoin raffles</p>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('packages') }}" class="active">Packages</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('faq') }}">FAQ</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="page-intro">
+                <h1>Raffle Entry Packages</h1>
+                <p>Choose the package that suits you best. The more entries you purchase, the better your chances of winning. All packages enter you into our monthly raffle for a 0.1 BTC wallet. Remember, you deserve a win!</p>
+            </div>
+            
+            <div class="packages-container">
+                {% for package in packages %}
+                    <div class="package-card">
+                        {% if package.name == "Gold" %}
+                            <div class="best-value">Best Value</div>
+                        {% endif %}
+                        <h2 class="package-name">{{ package.name }}</h2>
+                        <div class="package-price">
+                            <span class="currency">$</span>{{ "%.2f"|format(package.price) }}
+                        </div>
+                        <div class="package-entries">
+                            <span class="entries-highlight">{{ package.entries }}</span> Raffle Entries
+                        </div>
+                        <p class="package-description">{{ package.description }}</p>
+                        <a href="{{ url_for('package_detail', package_id=package.id) }}" class="cta-button">Buy Now</a>
+                    </div>
+                {% else %}
+                    <p>No packages are currently available. Please check back later.</p>
+                {% endfor %}
+            </div>
+            
+            <div class="info-box">
+                <h2>Why BitLucky?</h2>
+                <ul>
+                    <li>Completely anonymous - no personal information required</li>
+                    <li>Pay with Bitcoin or Monero for total privacy</li>
+                    <li>Tor-compatible for enhanced security</li>
+                    <li>Monthly raffles with sizeable Bitcoin prizes</li>
+                    <li>Provably fair selection algorithm</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>BitLucky</h2>
+                    <p>Your chance at financial freedom</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-links-column">
+                        <h3>Site Map</h3>
+                        <ul>
+                            <li><a href="{{ url_for('index') }}">Home</a></li>
+                            <li><a href="{{ url_for('packages') }}">Packages</a></li>
+                            <li><a href="{{ url_for('about') }}">About</a></li>
+                            <li><a href="{{ url_for('faq') }}">FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links-column">
+                        <h3>Legal</h3>
+                        <ul>
+                            <li><a href="{{ url_for('terms') }}">Terms</a></li>
+                            <li><a href="{{ url_for('privacy') }}">Privacy</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links-column">
+                        <h3>Contact</h3>
+                        <ul>
+                            <li><a href="{{ url_for('contact') }}">Support</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 BitLucky. All rights reserved.</p>
+                <p>Designed for Tor compatibility.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

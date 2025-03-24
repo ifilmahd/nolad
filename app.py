@@ -48,6 +48,22 @@ def privacy():
 def contact():
     return render_template('contact.html')
 
+# Package routes
+@app.route('/packages')
+def packages():
+    """Display all available packages"""
+    packages = Package.query.filter_by(is_active=True).all()
+    return render_template('packages.html', packages=packages)
+
+@app.route('/packages/<int:package_id>')
+def package_detail(package_id):
+    """Display details for a specific package and checkout options"""
+    package = Package.query.get_or_404(package_id)
+    if not package.is_active:
+        flash('This package is currently unavailable.', 'warning')
+        return redirect(url_for('packages'))
+    return render_template('package_detail.html', package=package)
+
 # Initialize FAQ data
 def init_faq():
     """Initialize FAQ data"""

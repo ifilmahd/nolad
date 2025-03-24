@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitLucky - {{ package.name }} Package</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        .package-detail {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3rem;
+            padding: 2rem 0;
+        }
+        
+        .package-info {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .checkout-container {
+            flex: 1;
+            min-width: 300px;
+            background-color: #0E3D44;
+            border: 2px solid #E6B143;
+            border-radius: 5px;
+            padding: 2rem;
+        }
+        
+        .package-name {
+            font-size: 2.5rem;
+            color: #E6B143;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .back-link {
+            color: #BFC0BF;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+        
+        .back-link:hover {
+            color: #E6B143;
+            text-decoration: underline;
+        }
+        
+        .package-price {
+            font-size: 3rem;
+            color: #F5F5F0;
+            margin-bottom: 1rem;
+        }
+        
+        .package-price .currency {
+            font-size: 1.8rem;
+            vertical-align: super;
+        }
+        
+        .package-entries {
+            font-size: 1.5rem;
+            background-color: #175B65;
+            color: #F5F5F0;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        
+        .entries-highlight {
+            color: #E6B143;
+            font-weight: bold;
+            font-size: 1.7rem;
+        }
+        
+        .package-description {
+            margin-bottom: 2rem;
+            color: #BFC0BF;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        .package-features {
+            background-color: #175B65;
+            border-radius: 5px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .package-features h3 {
+            color: #E6B143;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+        
+        .package-features ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .package-features li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .package-features li::before {
+            content: '✓';
+            color: #E6B143;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .checkout-title {
+            color: #E6B143;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .payment-method {
+            background-color: #175B65;
+            border-radius: 5px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        
+        .payment-method:hover {
+            transform: translateY(-5px);
+            background-color: #1a6873;
+        }
+        
+        .payment-method-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .payment-method-icon {
+            width: 30px;
+            height: 30px;
+            background-color: #E6B143;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #0E3D44;
+        }
+        
+        .payment-method-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #F5F5F0;
+        }
+        
+        .payment-details {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(230, 177, 67, 0.3);
+        }
+        
+        .payment-address {
+            background-color: #0E3D44;
+            padding: 1rem;
+            border-radius: 5px;
+            font-family: monospace;
+            word-break: break-all;
+            margin-bottom: 1rem;
+            color: #F5F5F0;
+        }
+        
+        .payment-instructions {
+            color: #BFC0BF;
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+        
+        .or-divider {
+            display: flex;
+            align-items: center;
+            color: #BFC0BF;
+            margin: 1rem 0;
+        }
+        
+        .or-divider::before,
+        .or-divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background-color: rgba(230, 177, 67, 0.3);
+            margin: 0 10px;
+        }
+        
+        .flash-message {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .flash-warning {
+            background-color: #ffc107;
+            color: #333;
+        }
+        
+        .flash-success {
+            background-color: #28a745;
+            color: #fff;
+        }
+        
+        @media (max-width: 800px) {
+            .package-detail {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>BitLucky</h1>
+            <p>Tor-compatible Bitcoin raffles</p>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('packages') }}" class="active">Packages</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('faq') }}">FAQ</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <a href="{{ url_for('packages') }}" class="back-link">← Back to Packages</a>
+            
+            <div class="package-detail">
+                <div class="package-info">
+                    <h1 class="package-name">{{ package.name }} Package</h1>
+                    <div class="package-price">
+                        <span class="currency">$</span>{{ "%.2f"|format(package.price) }}
+                    </div>
+                    <div class="package-entries">
+                        <span class="entries-highlight">{{ package.entries }}</span> Raffle Entries
+                    </div>
+                    <p class="package-description">{{ package.description }}</p>
+                    
+                    <div class="package-features">
+                        <h3>Package Features</h3>
+                        <ul>
+                            <li>{{ package.entries }} entries in this month's raffle</li>
+                            <li>Chance to win a 0.1 BTC wallet</li>
+                            <li>Complete anonymity guaranteed</li>
+                            <li>Pay with Bitcoin or Monero</li>
+                            <li>Instant entry confirmation</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="checkout-container">
+                    <h2 class="checkout-title">Purchase {{ package.name }} Package</h2>
+                    
+                    <div class="payment-methods">
+                        <div class="payment-method" onclick="togglePayment('bitcoin')">
+                            <div class="payment-method-header">
+                                <div class="payment-method-icon">₿</div>
+                                <div class="payment-method-name">Pay with Bitcoin</div>
+                            </div>
+                            <div id="bitcoin-details" class="payment-details" style="display: none;">
+                                <div class="payment-address">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div>
+                                <div class="payment-instructions">
+                                    <p>Send exactly ${{ "%.2f"|format(package.price) }} worth of Bitcoin to the address above.</p>
+                                    <p>Include your anonymous identifier in the transaction memo to claim your entries.</p>
+                                    <p>Entries will be confirmed once the transaction receives 3 confirmations.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="or-divider">OR</div>
+                        
+                        <div class="payment-method" onclick="togglePayment('monero')">
+                            <div class="payment-method-header">
+                                <div class="payment-method-icon">ꭗ</div>
+                                <div class="payment-method-name">Pay with Monero</div>
+                            </div>
+                            <div id="monero-details" class="payment-details" style="display: none;">
+                                <div class="payment-address">4BrL51JCc9NGQ71kWhnYoDRffsDZy7m1HUU7MRU4nUMXAHNFBEJhkTZV9HdaL4gfuNBxLPc3BeMkLGaPbF5vWtANQn5nfD5y8Ugwu81VH1K</div>
+                                <div class="payment-instructions">
+                                    <p>Send exactly ${{ "%.2f"|format(package.price) }} worth of Monero to the address above.</p>
+                                    <p>Include your anonymous identifier in the transaction memo to claim your entries.</p>
+                                    <p>Entries will be confirmed once the transaction receives 10 confirmations.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-box">
+                        <h3>Privacy Guaranteed</h3>
+                        <p>Your entries are linked only to your anonymous identifier. We never collect personal information.</p>
+                        <p>All winnings are automatically transferred to the wallet address that you provide during the entry process.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>BitLucky</h2>
+                    <p>Your chance at financial freedom</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-links-column">
+                        <h3>Site Map</h3>
+                        <ul>
+                            <li><a href="{{ url_for('index') }}">Home</a></li>
+                            <li><a href="{{ url_for('packages') }}">Packages</a></li>
+                            <li><a href="{{ url_for('about') }}">About</a></li>
+                            <li><a href="{{ url_for('faq') }}">FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links-column">
+                        <h3>Legal</h3>
+                        <ul>
+                            <li><a href="{{ url_for('terms') }}">Terms</a></li>
+                            <li><a href="{{ url_for('privacy') }}">Privacy</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links-column">
+                        <h3>Contact</h3>
+                        <ul>
+                            <li><a href="{{ url_for('contact') }}">Support</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 BitLucky. All rights reserved.</p>
+                <p>Designed for Tor compatibility.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        function togglePayment(method) {
+            // Hide all payment details
+            document.getElementById('bitcoin-details').style.display = 'none';
+            document.getElementById('monero-details').style.display = 'none';
+            
+            // Show the selected payment details
+            document.getElementById(method + '-details').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
