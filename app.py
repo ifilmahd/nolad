@@ -13,10 +13,15 @@ def index():
 
 @app.route('/faq')
 def faq():
-    """Render the FAQ/About page with information about BitLucky"""
+    """Render the FAQ page with frequently asked questions"""
     # Get all FAQ entries from the database, ordered by their position
     faqs = FAQ.query.order_by(FAQ.order).all()
     return render_template('faq.html', faqs=faqs)
+
+@app.route('/about')
+def about():
+    """Render the About page with information about BitLucky"""
+    return render_template('about.html')
 
 # Additional routes for placeholder pages
 @app.route('/terms')
