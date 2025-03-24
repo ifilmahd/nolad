@@ -123,13 +123,25 @@ def index():
         'next_raffle_date': 'April 23, 2025'  # Default
     }
     
-    # Override with values from database if they exist
+    # Get winner content from database
+    winner_content = {
+        'winner_id': '1A2b3C...',  # Default
+        'testimonial': '"I never thought I\'d win. BitLucky changed my life while keeping my identity safe!"'  # Default
+    }
+    
+    # Override wallet content with values from database if they exist
     for key in wallet_content.keys():
         content = SiteContent.query.filter_by(section='wallet', key=key).first()
         if content:
             wallet_content[key] = content.value
+            
+    # Override winner content with values from database if they exist
+    for key in winner_content.keys():
+        content = SiteContent.query.filter_by(section='winner', key=key).first()
+        if content:
+            winner_content[key] = content.value
     
-    return render_template('index.html', wallet_content=wallet_content)
+    return render_template('index.html', wallet_content=wallet_content, winner_content=winner_content)
 
 @app.route('/faq')
 def faq():
@@ -546,6 +558,18 @@ def init_site_content():
                 key="next_raffle_date", 
                 value="April 23, 2025",
                 description="Date of the next raffle drawing"
+            ),
+            SiteContent(
+                section="winner", 
+                key="winner_id", 
+                value="1A2b3C...",
+                description="Anonymous ID of the last winner (truncated for privacy)"
+            ),
+            SiteContent(
+                section="winner", 
+                key="testimonial", 
+                value="\"I never thought I'd win. BitLucky changed my life while keeping my identity safe!\"",
+                description="Winner testimonial quote displayed on the homepage"
             )
         ]
         
