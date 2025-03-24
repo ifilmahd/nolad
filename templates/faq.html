@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BitLucky - FAQ/About</title>
+    <title>BitLucky - FAQ</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/faq.css') }}">
 </head>
@@ -20,7 +20,7 @@
     <!-- FAQ Content -->
     <section class="faq-section">
         <div class="container">
-            <h2 class="section-title">About BitLucky</h2>
+            <h2 class="section-title">FAQ</h2>
             <div class="faq-container">
                 {% for faq in faqs %}
                 <div class="faq-item">
@@ -43,6 +43,8 @@
                     <a href="/terms" class="footer-link">Terms & Conditions</a>
                     <a href="/privacy" class="footer-link">Privacy Policy</a>
                     <a href="/contact" class="footer-link">Contact Us</a>
+                    <a href="/faq" class="footer-link">FAQ</a>
+                    <a href="/about" class="footer-link">About</a>
                 </nav>
             </div>
         </div>
