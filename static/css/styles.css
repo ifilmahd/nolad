@@ -399,5 +399,21 @@ a:hover {
     padding: var(--spacing-md) 0;
     background-color: var(--color-dark);
     border-bottom: var(--border-style);
-    text-align: center;
+}
+
+.logo-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    text-align: left;
+}
+
+.onion-verify {
+    margin-bottom: 0;
+    font-size: 0.8rem;
+    max-width: 60%;
+    text-align: right;
 }
