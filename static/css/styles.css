@@ -354,6 +354,53 @@ a:hover {
     opacity: 0.5;
 }
 
+/* Content Pages (Terms, Privacy, About, FAQ) */
+.content-section {
+    padding: var(--spacing-xl) 0;
+    background-color: var(--color-bg);
+}
+
+.content-container {
+    background-color: var(--color-dark);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-lg);
+    border: var(--border-style);
+    box-shadow: var(--box-shadow);
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.content-container h3 {
+    color: var(--color-accent);
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    font-size: 1.4rem;
+    border-bottom: 1px solid var(--color-accent);
+    padding-bottom: 8px;
+}
+
+.content-container p {
+    margin-bottom: var(--spacing-md);
+    line-height: 1.6;
+}
+
+.content-container ul {
+    margin-bottom: var(--spacing-md);
+    padding-left: var(--spacing-lg);
+}
+
+.content-container ul li {
+    margin-bottom: var(--spacing-sm);
+}
+
+.last-updated {
+    color: var(--color-light);
+    font-style: italic;
+    text-align: right;
+    font-size: 0.9rem;
+    margin-bottom: var(--spacing-lg);
+}
+
 /* Footer */
 .footer {
     background-color: var(--color-dark);
