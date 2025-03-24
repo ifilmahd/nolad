@@ -8,20 +8,14 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/faq.css') }}">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="main-nav">
+    <!-- Logo -->
+    <div class="logo-header">
         <div class="container">
             <div class="logo">
                 <h1>BitLucky</h1>
             </div>
-            <ul class="nav-links">
-                <li><a href="{{ url_for('index') }}">Home</a></li>
-                <li><a href="{{ url_for('packages') }}">Packages</a></li>
-                <li><a href="{{ url_for('about') }}">About</a></li>
-                <li><a href="{{ url_for('faq') }}" class="active">FAQ</a></li>
-            </ul>
         </div>
-    </nav>
+    </div>
     
     <!-- Hero Section -->
     <header class="hero">
