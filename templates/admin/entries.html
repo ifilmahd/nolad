@@ -411,8 +411,9 @@
             document.getElementById('modalNotes').value = notes;
             
             // Update block explorer link
-            // Using Blockchain.com as an example - could be other explorers as well
-            document.getElementById('blockExplorerLink').href = 'https://www.blockchain.com/explorer/transactions/btc/' + txid;
+            // Using a Tor-friendly blockchain explorer
+            document.getElementById('blockExplorerLink').href = 'http://explorerzydxu5ecjrkwceayqybizmpjjznk5izmitf2modhcusuqlid.onion/tx/' + txid;
+            // Note: The above is Mempool.space's Tor hidden service
             
             if (isVerified) {
                 document.getElementById('modalStatus').textContent = 'Verified';
