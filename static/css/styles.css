@@ -368,9 +368,32 @@ a:hover {
     gap: var(--spacing-md);
 }
 
+.footer-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    text-align: center;
+}
+
 .copyright {
     font-size: 1rem;
     color: var(--color-light);
+    margin: 0;
+}
+
+.contact-email {
+    font-size: 0.9rem;
+    color: var(--color-light);
+    margin: 0;
+}
+
+.contact-email a {
+    color: var(--color-accent);
+    text-decoration: none;
+}
+
+.contact-email a:hover {
+    text-decoration: underline;
 }
 
 .footer-nav {

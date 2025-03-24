@@ -6,6 +6,8 @@
     {{ meta_refresh|safe if meta_refresh }}
     <title>BitLucky - Win Bitcoin Anonymously</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.svg') }}" type="image/svg+xml">
+    <link rel="alternate icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 </head>
 <body>
     <!-- Logo Header with Onion Verification -->
@@ -132,7 +134,10 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="copyright">© 2025 BitLucky</p>
+                <div class="footer-info">
+                    <p class="copyright">© 2025 BitLucky</p>
+                    <p class="contact-email">Contact: <a href="mailto:cin-ebonaya5@proton.me">cin-ebonaya5@proton.me</a></p>
+                </div>
                 <nav class="footer-nav">
                     <a href="/terms" class="footer-link">Terms & Conditions</a>
                     <a href="/privacy" class="footer-link">Privacy Policy</a>
