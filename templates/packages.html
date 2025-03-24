@@ -19,7 +19,33 @@
         </div>
     </div>
     
-    <main>
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="container">
+            <h1 class="hero-title">BitLucky</h1>
+            <p class="hero-tagline">Raffle Entry Packages</p>
+            <p>Choose the package that suits you best. The more entries you purchase, the better your chances of winning!</p>
+        </div>
+    </header>
+
+    <!-- Wallet Centerpiece -->
+    <section class="wallet-centerpiece">
+        <div class="container">
+            <h2 class="section-title">This Month's Bitcoin Wallet</h2>
+            <div class="wallet-display">
+                <div class="wallet-image">
+                    <img src="{{ url_for('static', filename='images/bitcoin-wallet.svg') }}" alt="Bitcoin Wallet" width="300" height="300">
+                </div>
+                <div class="wallet-info">
+                    <div class="balance">0.1 BTC</div>
+                    <div class="raffle-date">Next Raffle: April 23, 2025</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Raffle Packages -->
+    <section class="raffle-packages">
         <div class="container">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -31,26 +57,24 @@
                 {% endif %}
             {% endwith %}
             
-            <div class="page-intro">
-                <h1>Raffle Entry Packages</h1>
-                <p>Choose the package that suits you best. The more entries you purchase, the better your chances of winning. All packages enter you into our monthly raffle for a 0.1 BTC wallet. Remember, you deserve a win!</p>
-            </div>
+            <h2 class="section-title">Available Packages</h2>
+            <p class="section-description">All packages enter you into our monthly raffle for a 0.1 BTC wallet. Remember, you deserve a win!</p>
             
             <div class="packages-container">
                 {% for package in packages %}
                     <div class="package-card">
-                        {% if package.name == "Gold" %}
-                            <div class="best-value">Best Value</div>
-                        {% endif %}
-                        <h2 class="package-name">{{ package.name }}</h2>
-                        <div class="package-price">
-                            <span class="currency">$</span>{{ "%.2f"|format(package.price) }}
+                        <div class="package-header {{ package.name.lower() }}">
+                            <h3>{{ package.name }}</h3>
+                            {% if package.name == "Gold" %}
+                                <div class="best-value">Best Value</div>
+                            {% endif %}
                         </div>
-                        <div class="package-entries">
-                            <span class="entries-highlight">{{ package.entries }}</span> Raffle Entries
+                        <div class="package-content">
+                            <p class="package-price">${{ "%.2f"|format(package.price) }}</p>
+                            <p class="package-entries">{{ package.entries }} entries</p>
+                            <p class="package-description">{{ package.description }}</p>
+                            <a href="{{ url_for('package_detail', package_id=package.id) }}" class="buy-button">Buy Now</a>
                         </div>
-                        <p class="package-description">{{ package.description }}</p>
-                        <a href="{{ url_for('package_detail', package_id=package.id) }}" class="cta-button">Buy Now</a>
                     </div>
                 {% else %}
                     <p>No packages are currently available. Please check back later.</p>
@@ -68,7 +92,7 @@
                 </ul>
             </div>
         </div>
-    </main>
+    </section>
     
     <!-- Footer -->
     <footer class="footer">

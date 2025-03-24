@@ -19,7 +19,33 @@
         </div>
     </div>
     
-    <main>
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="container">
+            <h1 class="hero-title">BitLucky</h1>
+            <p class="hero-tagline">{{ package.name }} Package</p>
+            <a href="{{ url_for('packages') }}" class="cta-button">← Back to Packages</a>
+        </div>
+    </header>
+
+    <!-- Wallet Centerpiece (Mini Version) -->
+    <section class="wallet-centerpiece">
+        <div class="container">
+            <h2 class="section-title">This Month's Bitcoin Wallet</h2>
+            <div class="wallet-display">
+                <div class="wallet-image">
+                    <img src="{{ url_for('static', filename='images/bitcoin-wallet.svg') }}" alt="Bitcoin Wallet" width="300" height="300">
+                </div>
+                <div class="wallet-info">
+                    <div class="balance">0.1 BTC</div>
+                    <div class="raffle-date">Next Raffle: April 23, 2025</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Package Detail Section -->
+    <section class="package-detail-section">
         <div class="container">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -31,33 +57,35 @@
                 {% endif %}
             {% endwith %}
             
-            <a href="{{ url_for('packages') }}" class="back-link">← Back to Packages</a>
-            
             <div class="package-detail">
                 <div class="package-info">
-                    <h1 class="package-name">{{ package.name }} Package</h1>
-                    <div class="package-price">
-                        <span class="currency">$</span>{{ "%.2f"|format(package.price) }}
+                    <div class="package-header {{ package.name.lower() }}">
+                        <h2>{{ package.name }} Package</h2>
                     </div>
-                    <div class="package-entries">
-                        <span class="entries-highlight">{{ package.entries }}</span> Raffle Entries
-                    </div>
-                    <p class="package-description">{{ package.description }}</p>
-                    
-                    <div class="package-features">
-                        <h3>Package Features</h3>
-                        <ul>
-                            <li>{{ package.entries }} entries in this month's raffle</li>
-                            <li>Chance to win a 0.1 BTC wallet</li>
-                            <li>Complete anonymity guaranteed</li>
-                            <li>Pay with Bitcoin</li>
-                            <li>Instant entry confirmation</li>
-                        </ul>
+                    <div class="package-content">
+                        <div class="package-price">
+                            <span class="currency">$</span>{{ "%.2f"|format(package.price) }}
+                        </div>
+                        <div class="package-entries">
+                            <span class="entries-highlight">{{ package.entries }}</span> Raffle Entries
+                        </div>
+                        <p class="package-description">{{ package.description }}</p>
+                        
+                        <div class="package-features">
+                            <h3>Package Features</h3>
+                            <ul>
+                                <li>{{ package.entries }} entries in this month's raffle</li>
+                                <li>Chance to win a 0.1 BTC wallet</li>
+                                <li>Complete anonymity guaranteed</li>
+                                <li>Pay with Bitcoin</li>
+                                <li>Instant entry confirmation</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
                 
                 <div class="checkout-container">
-                    <h2 class="checkout-title">Purchase {{ package.name }} Package</h2>
+                    <h2 class="section-title">Purchase {{ package.name }} Package</h2>
                     
                     <div class="payment-info">
                         <h3>Payment Information</h3>
@@ -124,7 +152,7 @@
                 </div>
             </div>
         </div>
-    </main>
+    </section>
     
     <!-- Footer -->
     <footer class="footer">
