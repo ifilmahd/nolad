@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitLucky Admin - Site Content</title>
+    <style>
+        /* Admin page styling - Fallout-inspired but more functional */
+        body {
+            background-color: #175B65;
+            color: #F5F5F0;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #0E3D44;
+            border-bottom: 2px solid #E6B143;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            color: #E6B143;
+            margin: 0;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+        }
+        nav {
+            display: flex;
+            gap: 1rem;
+        }
+        nav a {
+            color: #F5F5F0;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid #E6B143;
+            border-radius: 3px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        nav a:hover {
+            background-color: #E6B143;
+            color: #0E3D44;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #0E3D44;
+            border: 2px solid #E6B143;
+            border-radius: 5px;
+            flex-grow: 1;
+        }
+        h2 {
+            color: #E6B143;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .alert {
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .alert-success {
+            background-color: #28a745;
+        }
+        .alert-danger {
+            background-color: #dc3545;
+        }
+        .alert-info {
+            background-color: #17a2b8;
+        }
+        .content-section {
+            background-color: #175B65;
+            padding: 1.5rem;
+            border: 1px solid #E6B143;
+            border-radius: 5px;
+            margin-bottom: 2rem;
+        }
+        .content-section h3 {
+            color: #E6B143;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .content-section .edit-btn {
+            font-size: 0.9rem;
+            padding: 0.3rem 0.8rem;
+        }
+        .content-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px dashed #E6B143;
+        }
+        .content-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+        .item-header h4 {
+            color: #F5F5F0;
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        .item-description {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-bottom: 0.5rem;
+        }
+        .item-value {
+            background-color: #0E3D44;
+            padding: 1rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 3px;
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            background-color: #E6B143;
+            color: #0E3D44;
+            border: none;
+        }
+        .btn-primary {
+            background-color: #E6B143;
+            color: #0E3D44;
+        }
+        .btn-primary:hover {
+            background-color: #d6a133;
+        }
+        form {
+            margin-top: 1rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #E6B143;
+        }
+        textarea {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: #F5F5F0;
+            color: #0E3D44;
+            border: 1px solid #E6B143;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            box-sizing: border-box;
+            min-height: 100px;
+        }
+        .form-actions {
+            margin-top: 1rem;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BitLucky Admin</h1>
+        <nav>
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_faqs') }}">Manage FAQs</a>
+            <a href="{{ url_for('admin_packages') }}">Manage Packages</a>
+            <a href="{{ url_for('admin_content') }}">Site Content</a>
+            <a href="{{ url_for('admin_logout') }}">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <h2>Manage Site Content</h2>
+
+        {% if contents %}
+            {% set sections = {} %}
+            {% for content in contents %}
+                {% if content.section not in sections %}
+                    {% if sections.update({content.section: []}) %}{% endif %}
+                {% endif %}
+                {% if sections[content.section].append(content) %}{% endif %}
+            {% endfor %}
+
+            {% for section, section_contents in sections.items() %}
+                <div class="content-section">
+                    <h3>{{ section|title }} Section</h3>
+                    
+                    {% for content in section_contents %}
+                        <div class="content-item">
+                            <div class="item-header">
+                                <h4>{{ content.key|replace('_', ' ')|title }}</h4>
+                                <button class="btn btn-primary edit-btn" onclick="showEditForm({{ content.id }}, '{{ content.value|replace('\n', '\\n')|replace("'", "\\'") }}')">Edit</button>
+                            </div>
+                            {% if content.description %}
+                                <div class="item-description">{{ content.description }}</div>
+                            {% endif %}
+                            <div class="item-value">{{ content.value }}</div>
+                            
+                            <div id="edit-form-{{ content.id }}" style="display: none;">
+                                <form action="{{ url_for('admin_content') }}" method="POST">
+                                    <input type="hidden" name="action" value="edit">
+                                    <input type="hidden" name="id" value="{{ content.id }}">
+                                    <div class="form-group">
+                                        <label for="value-{{ content.id }}">Edit Content:</label>
+                                        <textarea id="value-{{ content.id }}" name="value" rows="4">{{ content.value }}</textarea>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                        <button type="button" class="btn" onclick="hideEditForm({{ content.id }})">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info">
+                No editable content has been defined yet. Content will appear here once it's added to the system.
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function showEditForm(id, value) {
+            document.getElementById('edit-form-' + id).style.display = 'block';
+            document.getElementById('value-' + id).value = value.replace(/\\n/g, '\n');
+        }
+
+        function hideEditForm(id) {
+            document.getElementById('edit-form-' + id).style.display = 'none';
+        }
+    </script>
+</body>
+</html>

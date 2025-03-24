@@ -48,8 +48,7 @@ def privacy():
 def contact():
     return render_template('contact.html')
 
-# Admin route to insert initial FAQ data (normally would be protected)
-@app.route('/init-faq', methods=['GET'])
+# Initialize FAQ data
 def init_faq():
     """Initialize FAQ data"""
     # Only run if no FAQs exist yet
@@ -87,8 +86,13 @@ def init_faq():
         return "FAQ data initialized successfully!"
     return "FAQ data already exists!"
 
-# Admin route to initialize admin user
-@app.route('/init-admin', methods=['GET'])
+# Admin route to insert initial FAQ data (web route)
+@app.route('/init-faq', methods=['GET'])
+def init_faq_route():
+    """Initialize FAQ data via web route"""
+    return init_faq()
+
+# Initialize admin user
 def init_admin():
     """Initialize admin user"""
     # Only run if no admin exists yet
@@ -100,8 +104,13 @@ def init_admin():
         return "Admin user initialized successfully!"
     return "Admin user already exists!"
 
-# Admin route to initialize packages
-@app.route('/init-packages', methods=['GET'])
+# Admin route to initialize admin user (web route)
+@app.route('/init-admin', methods=['GET'])
+def init_admin_route():
+    """Initialize admin user via web route"""
+    return init_admin()
+
+# Initialize packages
 def init_packages():
     """Initialize package data"""
     # Only run if no packages exist yet
@@ -134,6 +143,12 @@ def init_packages():
         db.session.commit()
         return "Package data initialized successfully!"
     return "Package data already exists!"
+
+# Admin route to initialize packages (web route)
+@app.route('/init-packages', methods=['GET'])
+def init_packages_route():
+    """Initialize package data via web route"""
+    return init_packages()
 
 # Admin login routes
 @app.route('/eng/login', methods=['GET', 'POST'])
