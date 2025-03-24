@@ -411,6 +411,16 @@ a:hover {
     text-align: left;
 }
 
+.logo h1 a {
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.logo h1 a:hover {
+    color: var(--color-highlight);
+}
+
 .onion-verify {
     margin-bottom: 0;
     font-size: 0.8rem;
