@@ -1,0 +1,57 @@
+/* FAQ Page Specific Styles */
+.faq-section {
+    padding: var(--spacing-xl) 0;
+    text-align: left;
+}
+
+.faq-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.faq-item {
+    background-color: var(--color-dark);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    border: var(--border-style);
+    overflow: hidden;
+    padding: var(--spacing-lg);
+}
+
+.faq-question {
+    font-size: 1.3rem;
+    color: var(--color-accent);
+    margin-bottom: var(--spacing-md);
+    position: relative;
+}
+
+.faq-answer {
+    color: var(--color-text);
+    line-height: 1.6;
+}
+
+.faq-answer p {
+    margin-bottom: var(--spacing-md);
+}
+
+/* Styling to make the FAQ entries visually attractive */
+.faq-item:nth-child(odd) {
+    border-left: 6px solid var(--color-accent);
+}
+
+.faq-item:nth-child(even) {
+    border-right: 6px solid var(--color-accent);
+}
+
+/* Style the first FAQ item specially to highlight "You deserve a win" */
+.faq-item:first-child {
+    background-color: rgba(230, 200, 76, 0.1);
+}
+
+.faq-item:first-child .faq-answer {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
