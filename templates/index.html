@@ -97,9 +97,9 @@
                     <img src="{{ url_for('static', filename='images/trophy.svg') }}" alt="Trophy" width="300" height="300">
                 </div>
                 <div class="winner-info">
-                    <p class="winner-id">Anonymous Winner: 1A2b3C...</p>
+                    <p class="winner-id">Anonymous Winner: {{ winner_content.winner_id }}</p>
                     <blockquote class="testimonial">
-                        "I never thought I'd win. BitLucky changed my life while keeping my identity safe!"
+                        {{ winner_content.testimonial }}
                     </blockquote>
                 </div>
             </div>
