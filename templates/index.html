@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1024, initial-scale=1.0">
     {{ meta_refresh|safe if meta_refresh }}
     <title>BitLucky - Win Bitcoin Anonymously</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
@@ -25,6 +25,8 @@
     <header class="hero">
         <div class="container">
             <h1 class="hero-title">BitLucky</h1>
+            <p class="hero-subtitle">You deserve a win – and BITLUCKY makes it happen!</p>
+            <p class="hero-subtitle">For only 5 USD you can enter our Bitcoin raffle for a chance to win 50 Bitcoins!</p>
             <p class="hero-tagline">Win Bitcoin Anonymously</p>
             <a href="{{ url_for('packages') }}" class="cta-button">Enter Now</a>
         </div>
@@ -114,16 +116,51 @@
     <!-- Winner Section -->
     <section class="winner-section">
         <div class="container">
-            <h2 class="section-title">Last Month's Winner</h2>
+            <h2 class="section-title">Winners Circle</h2>
             <div class="winner-display">
                 <div class="winner-image">
                     <img src="{{ url_for('static', filename='images/trophy.png') }}" alt="Trophy" width="300" height="300">
                 </div>
                 <div class="winner-info">
-                    <p class="winner-id">Anonymous Winner: {{ winner_content.winner_id }}</p>
-                    <blockquote class="testimonial">
-                        {{ winner_content.testimonial }}
-                    </blockquote>
+                    <div class="testimonial-slider">
+                        <!-- Hidden radio buttons for controlling the slider -->
+                        {% for i in range(testimonials|length) %}
+                        <input type="radio" name="testimonial-control" id="testimonial{{ i+1 }}" {% if i == 0 %}checked{% endif %}>
+                        {% endfor %}
+
+                        <!-- Always include the "Your Lucky Day?" option -->
+                        <input type="radio" name="testimonial-control" id="testimonial{{ testimonials|length + 1 }}">
+                        
+                        <!-- Testimonial slides -->
+                        <div class="testimonial-slides">
+                            {% for testimonial in testimonials %}
+                            <div class="testimonial-slide" id="slide{{ loop.index }}">
+                                <p class="winner-id">Anonymous Winner: {{ testimonial.winner_id }}</p>
+                                <blockquote class="testimonial">
+                                    {{ testimonial.testimonial_text }}
+                                </blockquote>
+                            </div>
+                            {% endfor %}
+                            
+                            <!-- Always include the "Your Lucky Day?" slide -->
+                            <div class="testimonial-slide" id="slide{{ testimonials|length + 1 }}">
+                                <p class="winner-id">Your Lucky Day?</p>
+                                <blockquote class="testimonial">
+                                    Want your name here next?<br>
+                                    "Takes one ticket to rewrite your history! For the price of a Coffee or a bottle of water you could win {{ wallet_content.prize_amount }} Bitcoins!"
+                                </blockquote>
+                            </div>
+                        </div>
+                        
+                        <!-- Navigation controls -->
+                        <div class="testimonial-navigation">
+                            {% for i in range(testimonials|length) %}
+                            <label for="testimonial{{ i+1 }}" class="nav-button">{{ i+1 }}</label>
+                            {% endfor %}
+                            <!-- Always include the "Your Lucky Day?" navigation button -->
+                            <label for="testimonial{{ testimonials|length + 1 }}" class="nav-button">{{ testimonials|length + 1 }}</label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

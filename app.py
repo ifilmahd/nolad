@@ -4,7 +4,7 @@ import json
 import time
 from decimal import Decimal
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-from models import db, FAQ, Admin, Package, SiteContent, Raffle, Entry
+from models import db, FAQ, Admin, Package, SiteContent, Raffle, Entry, Testimonial
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
@@ -185,22 +185,23 @@ def index():
     # Get wallet content from database with countdown info
     wallet_content = get_wallet_content()
     
-    # Get winner content from database
-    winner_content = {
-        'winner_id': '1A2b3C...',  # Default
-        'testimonial': '"I never thought I\'d win. BitLucky changed my life while keeping my identity safe!"'  # Default
-    }
+    # Get active testimonials from the database, ordered by their position
+    testimonials = Testimonial.query.filter_by(is_active=True).order_by(Testimonial.order).all()
     
-    # Override winner content with values from database if they exist
-    for key in winner_content.keys():
-        content = SiteContent.query.filter_by(section='winner', key=key).first()
-        if content:
-            winner_content[key] = content.value
+    # Ensure we have at least one testimonial for display
+    if not testimonials:
+        # If no testimonials exist, create a default testimonial structure
+        # This will be replaced when real testimonials are added via admin
+        default_testimonial = {
+            'winner_id': 'R74c9zKX',
+            'testimonial_text': '"I never thought I\'d win. BitLucky changed my life while keeping my identity safe!"'
+        }
+        testimonials = [default_testimonial]
     
     # Add meta refresh tag to update countdown every minute
     meta_refresh = '<meta http-equiv="refresh" content="60">'
     
-    return render_template('index.html', wallet_content=wallet_content, winner_content=winner_content, meta_refresh=meta_refresh)
+    return render_template('index.html', wallet_content=wallet_content, testimonials=testimonials, meta_refresh=meta_refresh)
 
 @app.route('/faq')
 def faq():
@@ -725,6 +726,153 @@ def admin_packages():
     
     packages = Package.query.all()
     return render_template('admin/packages.html', packages=packages)
+
+@app.route('/eng/testimonials', methods=['GET', 'POST'])
+@admin_required
+def admin_testimonials():
+    """Admin testimonials management page"""
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'delete':
+            # Delete testimonial
+            testimonial_id = request.form.get('testimonial_id')
+            if testimonial_id:
+                try:
+                    testimonial = Testimonial.query.get(testimonial_id)
+                    if testimonial:
+                        db.session.delete(testimonial)
+                        db.session.commit()
+                        flash('Testimonial deleted successfully!', 'success')
+                    else:
+                        flash('Testimonial not found.', 'warning')
+                except Exception as e:
+                    db.session.rollback()
+                    flash(f'Error deleting testimonial: {str(e)}', 'danger')
+        elif action == 'toggle_status':
+            # Toggle testimonial active status
+            testimonial_id = request.form.get('testimonial_id')
+            if testimonial_id:
+                try:
+                    testimonial = Testimonial.query.get(testimonial_id)
+                    if testimonial:
+                        testimonial.is_active = not testimonial.is_active
+                        db.session.commit()
+                        status = "activated" if testimonial.is_active else "deactivated"
+                        flash(f'Testimonial {status} successfully!', 'success')
+                    else:
+                        flash('Testimonial not found.', 'warning')
+                except Exception as e:
+                    db.session.rollback()
+                    flash(f'Error updating testimonial status: {str(e)}', 'danger')
+        elif action == 'update_order':
+            # Update testimonial order
+            for key, value in request.form.items():
+                if key.startswith('order_'):
+                    testimonial_id = key.replace('order_', '')
+                    try:
+                        testimonial = Testimonial.query.get(testimonial_id)
+                        if testimonial:
+                            testimonial.order = int(value)
+                    except ValueError:
+                        pass
+            
+            try:
+                db.session.commit()
+                flash('Testimonial order updated successfully!', 'success')
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Error updating testimonial order: {str(e)}', 'danger')
+    
+    # Get all testimonials, ordered by their position
+    testimonials = Testimonial.query.order_by(Testimonial.order).all()
+    return render_template('admin/testimonials.html', testimonials=testimonials)
+
+@app.route('/eng/testimonials/add', methods=['GET', 'POST'])
+@admin_required
+def admin_testimonial_add():
+    """Admin add testimonial page"""
+    if request.method == 'POST':
+        winner_id = request.form.get('winner_id')
+        testimonial_text = request.form.get('testimonial_text')
+        order = request.form.get('order', 0)
+        is_active = 'is_active' in request.form
+        
+        # Basic validation
+        if not all([winner_id, testimonial_text]):
+            flash('Winner ID and testimonial text are required!', 'warning')
+            return render_template('admin/testimonial_edit.html', 
+                                  testimonial=None, 
+                                  is_add=True)
+        
+        try:
+            # Get the highest order value + 1 if no order provided
+            if not order:
+                highest_order = db.session.query(db.func.max(Testimonial.order)).scalar() or 0
+                order = highest_order + 1
+                
+            # Create new testimonial
+            testimonial = Testimonial(
+                winner_id=winner_id,
+                testimonial_text=testimonial_text,
+                order=int(order),
+                is_active=is_active
+            )
+            
+            db.session.add(testimonial)
+            db.session.commit()
+            
+            flash('Testimonial added successfully!', 'success')
+            return redirect(url_for('admin_testimonials'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error adding testimonial: {str(e)}', 'danger')
+    
+    # For GET request
+    highest_order = db.session.query(db.func.max(Testimonial.order)).scalar() or 0
+    return render_template('admin/testimonial_edit.html', 
+                          testimonial=None, 
+                          is_add=True,
+                          next_order=highest_order + 1)
+
+@app.route('/eng/testimonials/edit/<int:testimonial_id>', methods=['GET', 'POST'])
+@admin_required
+def admin_testimonial_edit(testimonial_id):
+    """Admin edit testimonial page"""
+    testimonial = Testimonial.query.get_or_404(testimonial_id)
+    
+    if request.method == 'POST':
+        winner_id = request.form.get('winner_id')
+        testimonial_text = request.form.get('testimonial_text')
+        order = request.form.get('order', 0)
+        is_active = 'is_active' in request.form
+        
+        # Basic validation
+        if not all([winner_id, testimonial_text]):
+            flash('Winner ID and testimonial text are required!', 'warning')
+            return render_template('admin/testimonial_edit.html', 
+                                  testimonial=testimonial, 
+                                  is_add=False)
+        
+        try:
+            # Update testimonial
+            testimonial.winner_id = winner_id
+            testimonial.testimonial_text = testimonial_text
+            testimonial.order = int(order)
+            testimonial.is_active = is_active
+            
+            db.session.commit()
+            
+            flash('Testimonial updated successfully!', 'success')
+            return redirect(url_for('admin_testimonials'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error updating testimonial: {str(e)}', 'danger')
+    
+    # For GET request
+    return render_template('admin/testimonial_edit.html', 
+                          testimonial=testimonial, 
+                          is_add=False)
 
 @app.route('/eng/content', methods=['GET', 'POST'])
 @admin_required

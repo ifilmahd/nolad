@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1024, initial-scale=1.0">
     <title>BitLucky Admin Dashboard</title>
     <style>
         /* Admin page styling - Fallout-inspired but more functional */
@@ -148,6 +148,7 @@
             <a href="{{ url_for('admin_entries') }}">Verify Entries</a>
             <a href="{{ url_for('admin_faqs') }}">Manage FAQs</a>
             <a href="{{ url_for('admin_packages') }}">Manage Packages</a>
+            <a href="{{ url_for('admin_testimonials') }}">Testimonials</a>
             <a href="{{ url_for('admin_content') }}">Site Content</a>
             <a href="{{ url_for('admin_logout') }}">Logout</a>
         </nav>
@@ -243,6 +244,11 @@
                 <h3>Manage Packages</h3>
                 <p>Modify the raffle entry packages available for purchase.</p>
                 <a href="{{ url_for('admin_packages') }}">Manage Packages</a>
+            </div>
+            <div class="admin-link-card">
+                <h3>Manage Testimonials</h3>
+                <p>Add, edit, or remove winner testimonials shown in the Winners Circle.</p>
+                <a href="{{ url_for('admin_testimonials') }}">Manage Testimonials</a>
             </div>
             <div class="admin-link-card">
                 <h3>Site Content</h3>

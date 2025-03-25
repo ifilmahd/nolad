@@ -69,6 +69,15 @@ class Entry(db.Model):
     # Number of entries this purchase represents
     entry_count = db.Column(db.Integer, nullable=False, default=1)
     
+class Testimonial(db.Model):
+    """Model for winner testimonials shown in the Winners Circle"""
+    id = db.Column(db.Integer, primary_key=True)
+    winner_id = db.Column(db.String(64), nullable=False)  # Anonymous ID like "R74c9zKX"
+    testimonial_text = db.Column(db.Text, nullable=False)  # The winner's testimonial
+    order = db.Column(db.Integer, default=0)  # For ordering the testimonials
+    is_active = db.Column(db.Boolean, default=True)  # To enable/disable testimonials
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 class SiteContent(db.Model):
     """Model for editable site content"""
     id = db.Column(db.Integer, primary_key=True)

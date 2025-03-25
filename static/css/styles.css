@@ -93,6 +93,13 @@ a:hover {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+.hero-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-highlight);
+    font-weight: bold;
+}
+
 .hero-tagline {
     font-size: 1.5rem;
     margin-bottom: var(--spacing-lg);
@@ -329,6 +336,7 @@ a:hover {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
 }
 
 .winner-id {
@@ -336,6 +344,82 @@ a:hover {
     font-weight: bold;
     margin-bottom: var(--spacing-md);
     color: var(--color-accent);
+}
+
+/* Testimonial Slider with Radio Buttons */
+.testimonial-slider {
+    width: 100%;
+    position: relative;
+    margin-bottom: var(--spacing-md);
+}
+
+/* Hide radio buttons */
+.testimonial-slider input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+/* Default state - hide all slides */
+.testimonial-slide {
+    display: none;
+    width: 100%;
+}
+
+/* Show only the selected slide based on radio button selection */
+#testimonial1:checked ~ .testimonial-slides #slide1,
+#testimonial2:checked ~ .testimonial-slides #slide2,
+#testimonial3:checked ~ .testimonial-slides #slide3,
+#testimonial4:checked ~ .testimonial-slides #slide4,
+#testimonial5:checked ~ .testimonial-slides #slide5,
+#testimonial6:checked ~ .testimonial-slides #slide6,
+#testimonial7:checked ~ .testimonial-slides #slide7,
+#testimonial8:checked ~ .testimonial-slides #slide8,
+#testimonial9:checked ~ .testimonial-slides #slide9,
+#testimonial10:checked ~ .testimonial-slides #slide10 {
+    display: block;
+}
+
+/* Navigation styling */
+.testimonial-navigation {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+}
+
+.nav-button {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-dark);
+    color: var(--color-accent);
+    border: 2px solid var(--color-accent);
+    border-radius: 50%;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+/* Style for the selected button */
+#testimonial1:checked ~ .testimonial-navigation label[for="testimonial1"],
+#testimonial2:checked ~ .testimonial-navigation label[for="testimonial2"],
+#testimonial3:checked ~ .testimonial-navigation label[for="testimonial3"],
+#testimonial4:checked ~ .testimonial-navigation label[for="testimonial4"],
+#testimonial5:checked ~ .testimonial-navigation label[for="testimonial5"],
+#testimonial6:checked ~ .testimonial-navigation label[for="testimonial6"],
+#testimonial7:checked ~ .testimonial-navigation label[for="testimonial7"],
+#testimonial8:checked ~ .testimonial-navigation label[for="testimonial8"],
+#testimonial9:checked ~ .testimonial-navigation label[for="testimonial9"],
+#testimonial10:checked ~ .testimonial-navigation label[for="testimonial10"] {
+    background-color: var(--color-accent);
+    color: var(--color-dark);
+}
+
+.nav-button:hover {
+    background-color: var(--color-accent);
+    color: var(--color-dark);
 }
 
 .testimonial {
@@ -474,6 +558,14 @@ a:hover {
     
     .wallet-info, .winner-info {
         align-items: flex-start;
+    }
+    
+    .testimonial-slider {
+        max-width: 500px;
+    }
+    
+    .testimonial-navigation {
+        justify-content: flex-start;
     }
     
     .footer-content {
