@@ -278,6 +278,37 @@
                     </div>
                 {% endif %}
             </div>
+            
+            {% set next_raffle_date = wallet_content.get('next_raffle_date', '') %}
+            <div class="content-item">
+                <div class="item-header">
+                    <h4>Next Raffle Date</h4>
+                    <a href="{{ url_for('admin_content') }}?edit=next_raffle_date" class="btn btn-primary edit-btn">Edit</a>
+                </div>
+                <div class="item-description">The date of the next raffle drawing.</div>
+                <div class="item-value">{{ next_raffle_date }}</div>
+                
+                {% if request.args.get('edit') == 'next_raffle_date' %}
+                    <div class="edit-form">
+                        <form action="{{ url_for('admin_content') }}" method="POST">
+                            <input type="hidden" name="action" value="edit_wallet">
+                            <input type="hidden" name="key" value="next_raffle_date">
+                            <div class="form-group">
+                                <label for="value-next_raffle_date">Next Raffle Date:</label>
+                                <textarea id="value-next_raffle_date" name="value" rows="1">{{ next_raffle_date }}</textarea>
+                                <small style="color: #F5F5F0; display: block; margin-top: 5px;">
+                                    Preferred format: Month Day, Year (e.g., April 23, 2025)<br>
+                                    The system can also understand dates like: Apr 23, 2025 or 04/23/2025
+                                </small>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                <a href="{{ url_for('admin_content') }}" class="btn">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
         </div>
         
         <div class="content-section">

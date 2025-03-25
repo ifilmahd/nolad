@@ -110,6 +110,7 @@ def get_wallet_content():
 def get_countdown_info():
     """Calculate and return raffle countdown information"""
     from datetime import datetime, timedelta
+    import re
     
     # Get the next raffle date from database
     next_raffle_content = SiteContent.query.filter_by(section='wallet', key='next_raffle_date').first()
@@ -118,7 +119,49 @@ def get_countdown_info():
         # Try to parse the date from the database
         if next_raffle_content:
             next_raffle_str = next_raffle_content.value
-            next_raffle_date = datetime.strptime(next_raffle_str, "%B %d, %Y")
+            
+            # Clean up the date string - standardize it
+            next_raffle_str = next_raffle_str.strip()
+            # Convert first letter of month to uppercase and rest to lowercase
+            if ' ' in next_raffle_str:
+                month_part = next_raffle_str.split(' ')[0]
+                if month_part:
+                    month_part = month_part.capitalize()
+                    next_raffle_str = month_part + next_raffle_str[len(month_part):]
+            
+            # Replace periods with commas after day numbers
+            next_raffle_str = re.sub(r'(\d+)\.', r'\1,', next_raffle_str)
+            
+            # Try multiple date formats
+            date_formats = [
+                "%B %d, %Y",    # April 23, 2025
+                "%B %d %Y",     # April 23 2025
+                "%b %d, %Y",    # Apr 23, 2025
+                "%b %d %Y",     # Apr 23 2025
+                "%Y-%m-%d",     # 2025-04-23
+                "%m/%d/%Y",     # 04/23/2025
+                "%d %B %Y",     # 23 April 2025
+                "%d %b %Y",     # 23 Apr 2025
+                "%B %d.%Y",     # April 23.2025
+                "%d.%m.%Y"      # 23.04.2025
+            ]
+            
+            # Try each format until one works
+            next_raffle_date = None
+            for date_format in date_formats:
+                try:
+                    next_raffle_date = datetime.strptime(next_raffle_str, date_format)
+                    break
+                except ValueError:
+                    continue
+            
+            # If none of the formats worked, use default
+            if next_raffle_date is None:
+                next_raffle_date = datetime.strptime("April 23, 2025", "%B %d, %Y")
+                # Also update the database with the correct format
+                if next_raffle_content:
+                    next_raffle_content.value = "April 23, 2025"
+                    db.session.commit()
         else:
             # Default to April 23, 2025 if not in database
             next_raffle_date = datetime.strptime("April 23, 2025", "%B %d, %Y")
@@ -895,6 +938,54 @@ def admin_content():
             value = request.form.get('value')
             
             if key and value:
+                # Special handling for the next_raffle_date to ensure it's in a consistent format
+                if key == 'next_raffle_date':
+                    # Try to parse and standardize the date format
+                    from datetime import datetime
+                    import re
+                    
+                    # Clean up the date string
+                    value = value.strip()
+                    
+                    # Convert first letter of month to uppercase and rest to lowercase
+                    if ' ' in value:
+                        month_part = value.split(' ')[0]
+                        if month_part:
+                            month_part = month_part.capitalize()
+                            value = month_part + value[len(month_part):]
+                    
+                    # Replace periods with commas after day numbers
+                    value = re.sub(r'(\d+)\.', r'\1,', value)
+                    
+                    # Try multiple date formats
+                    date_formats = [
+                        "%B %d, %Y",    # April 23, 2025
+                        "%B %d %Y",     # April 23 2025
+                        "%b %d, %Y",    # Apr 23, 2025
+                        "%b %d %Y",     # Apr 23 2025
+                        "%Y-%m-%d",     # 2025-04-23
+                        "%m/%d/%Y",     # 04/23/2025
+                        "%d %B %Y",     # 23 April 2025
+                        "%d %b %Y",     # 23 Apr 2025
+                        "%B %d.%Y",     # April 23.2025
+                        "%d.%m.%Y"      # 23.04.2025
+                    ]
+                    
+                    # Try each format until one works
+                    parsed_date = None
+                    for date_format in date_formats:
+                        try:
+                            parsed_date = datetime.strptime(value, date_format)
+                            break
+                        except ValueError:
+                            continue
+                    
+                    # If we successfully parsed the date, convert it to the standard format
+                    if parsed_date is not None:
+                        value = parsed_date.strftime("%B %d, %Y")
+                    else:
+                        flash("Warning: Couldn't interpret the date format. Please use Month Day, Year format.", 'warning')
+                
                 # Look up the wallet content item by key
                 content = SiteContent.query.filter_by(section='wallet', key=key).first()
                 
