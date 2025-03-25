@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitLucky Admin - Entry Details</title>
+    <style>
+        /* Admin page styling - Fallout-inspired but more functional */
+        body {
+            background-color: #175B65;
+            color: #F5F5F0;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #0E3D44;
+            border-bottom: 2px solid #E6B143;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            color: #E6B143;
+            margin: 0;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+        }
+        nav {
+            display: flex;
+            gap: 1rem;
+        }
+        nav a {
+            color: #F5F5F0;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid #E6B143;
+            border-radius: 3px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        nav a:hover {
+            background-color: #E6B143;
+            color: #0E3D44;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #0E3D44;
+            border: 2px solid #E6B143;
+            border-radius: 5px;
+            flex-grow: 1;
+        }
+        h2 {
+            color: #E6B143;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .alert {
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .alert-success {
+            background-color: #28a745;
+        }
+        .alert-danger {
+            background-color: #dc3545;
+        }
+        .alert-warning {
+            background-color: #ffc107;
+            color: #0E3D44;
+        }
+        .alert-info {
+            background-color: #17a2b8;
+        }
+        .entry-detail {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(230, 177, 67, 0.3);
+        }
+        .entry-detail h4 {
+            margin: 0;
+            margin-bottom: 0.5rem;
+            color: #E6B143;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 3px;
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            border: none;
+            font-family: 'Courier New', monospace;
+        }
+        .btn-primary {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            color: #0E3D44;
+        }
+        .btn-default {
+            background-color: #E6B143;
+            color: #0E3D44;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #E6B143;
+        }
+        .form-group textarea {
+            width: 100%;
+            padding: 0.5rem;
+            background-color: #0E3D44;
+            color: #F5F5F0;
+            border: 1px solid #E6B143;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            min-height: 80px;
+            box-sizing: border-box;
+        }
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+        .actions div {
+            display: flex;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BitLucky Admin</h1>
+        <nav>
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_entries') }}">Verify Entries</a>
+            <a href="{{ url_for('admin_faqs') }}">Manage FAQs</a>
+            <a href="{{ url_for('admin_packages') }}">Manage Packages</a>
+            <a href="{{ url_for('admin_content') }}">Site Content</a>
+            <a href="{{ url_for('admin_logout') }}">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <h2>Entry Details</h2>
+        
+        <div class="entry-detail">
+            <h4>Package</h4>
+            <p>{{ entry.package.name }}</p>
+        </div>
+        
+        <div class="entry-detail">
+            <h4>Email</h4>
+            <p>{{ entry.email }}</p>
+        </div>
+        
+        <div class="entry-detail">
+            <h4>Bitcoin Wallet</h4>
+            <p style="word-break: break-all; font-family: monospace;">{{ entry.btc_wallet }}</p>
+        </div>
+        
+        <div class="entry-detail">
+            <h4>Transaction ID (TXID)</h4>
+            <p style="word-break: break-all; font-family: monospace;">{{ entry.txid }}</p>
+            <a href="http://explorerzydxu5ecjrkwceayqybizmpjjznk5izmitf2modhcusuqlid.onion/tx/{{ entry.txid }}" target="_blank" style="color: #E6B143; display: block; margin-top: 0.5rem;">View on Block Explorer</a>
+        </div>
+        
+        <div class="entry-detail">
+            <h4>Bitcoin Amount</h4>
+            <p>{{ "%.8f"|format(entry.btc_amount) }} BTC</p>
+        </div>
+        
+        <div class="entry-detail">
+            <h4>Bitcoin Price at Time of Purchase</h4>
+            <p>${{ "%.2f"|format(entry.btc_price) }}</p>
+        </div>
+        
+        <div class="entry-detail">
+            <h4>Verification Status</h4>
+            <p style="color: {% if entry.is_verified %}#28a745{% else %}#ffc107{% endif %};">
+                {% if entry.is_verified %}Verified{% else %}Pending Verification{% endif %}
+            </p>
+        </div>
+        
+        <form action="{{ url_for('admin_entries') }}" method="POST">
+            <input type="hidden" name="id" value="{{ entry.id }}">
+            
+            <div class="form-group">
+                <label for="verification_notes">Verification Notes</label>
+                <textarea id="verification_notes" name="verification_notes">{{ entry.verification_notes or '' }}</textarea>
+            </div>
+            
+            <div class="actions">
+                <div>
+                    {% if not entry.is_verified %}
+                    <button type="submit" name="action" value="verify" class="btn btn-primary">Mark as Verified</button>
+                    {% endif %}
+                    <button type="submit" name="action" value="reject" class="btn btn-danger">Mark as Rejected</button>
+                </div>
+                <a href="{{ url_for('admin_entries') }}" class="btn btn-default">Back to Entries</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

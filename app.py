@@ -724,13 +724,43 @@ def admin_content():
                 db.session.commit()
                 flash('Content updated successfully!', 'success')
         
+        elif action == 'edit_wallet':
+            key = request.form.get('key')
+            value = request.form.get('value')
+            
+            if key and value:
+                # Look up the wallet content item by key
+                content = SiteContent.query.filter_by(section='wallet', key=key).first()
+                
+                if content:
+                    content.value = value
+                    db.session.commit()
+                    flash(f'Wallet {key.replace("_", " ")} updated successfully!', 'success')
+                else:
+                    # If the content doesn't exist, create it
+                    new_content = SiteContent(
+                        section='wallet',
+                        key=key,
+                        value=value,
+                        description=f'Wallet {key.replace("_", " ")} setting'
+                    )
+                    db.session.add(new_content)
+                    db.session.commit()
+                    flash(f'Wallet {key.replace("_", " ")} created successfully!', 'success')
+        
         return redirect(url_for('admin_content'))
     
     # Get current Bitcoin price for display
     current_btc_price = get_bitcoin_price()
     
+    # Get wallet content for the wallet settings section
+    wallet_content = {}
+    wallet_items = SiteContent.query.filter_by(section='wallet').all()
+    for item in wallet_items:
+        wallet_content[item.key] = item.value
+    
     contents = SiteContent.query.all()
-    return render_template('admin/content.html', contents=contents, btc_price=current_btc_price)
+    return render_template('admin/content.html', contents=contents, btc_price=current_btc_price, wallet_content=wallet_content)
 
 @app.route('/eng/refresh-btc-price')
 @admin_required
@@ -799,8 +829,25 @@ def admin_entries():
                 entry.verification_notes = request.form.get('verification_notes', '')
                 db.session.commit()
                 flash('Entry marked as rejected!', 'warning')
-                
-        return redirect(url_for('admin_entries'))
+        
+        # Get the entry_id from the form to determine where to redirect
+        entry_id = request.form.get('id')
+        if entry_id and request.args.get('entry_id'):
+            # If we came from the details page, go back there
+            return redirect(url_for('admin_entries', entry_id=entry_id))
+        else:
+            # Otherwise go back to the entries list
+            return redirect(url_for('admin_entries'))
+    
+    # Check if we're looking at a specific entry (details view)
+    entry_id = request.args.get('entry_id')
+    if entry_id:
+        entry = Entry.query.get(entry_id)
+        if entry:
+            return render_template('admin/entry_details.html', entry=entry)
+        else:
+            flash('Entry not found', 'danger')
+            return redirect(url_for('admin_entries'))
     
     # Filter by verification status if requested
     filter_status = request.args.get('filter')

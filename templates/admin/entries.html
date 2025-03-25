@@ -317,7 +317,7 @@
                                 {% endif %}
                             </td>
                             <td class="actions">
-                                <button class="btn details-btn" onclick="showDetails('{{ entry.id }}', '{{ entry.email }}', '{{ entry.btc_wallet }}', '{{ entry.txid }}', '{{ entry.package.name }}', '{{ "%.8f"|format(entry.btc_amount) }}', '{{ entry.btc_price }}', '{{ entry.verification_notes or '' }}', {{ 'true' if entry.is_verified else 'false' }})">Details</button>
+                                <a href="{{ url_for('admin_entries', entry_id=entry.id) }}" class="btn details-btn">Details</a>
                                 
                                 {% if not entry.is_verified %}
                                     <form action="{{ url_for('admin_entries') }}" method="POST" style="display: inline;">
@@ -338,111 +338,6 @@
         {% endif %}
     </div>
 
-    <!-- Entry Details Modal -->
-    <div id="entryModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
-            <h3 style="color: #E6B143; margin-top: 0;">Entry Details</h3>
-            
-            <div class="entry-detail">
-                <h4>Package</h4>
-                <p id="modalPackage"></p>
-            </div>
-            
-            <div class="entry-detail">
-                <h4>Email</h4>
-                <p id="modalEmail"></p>
-            </div>
-            
-            <div class="entry-detail">
-                <h4>Bitcoin Wallet</h4>
-                <p id="modalWallet" style="word-break: break-all; font-family: monospace;"></p>
-            </div>
-            
-            <div class="entry-detail">
-                <h4>Transaction ID (TXID)</h4>
-                <p id="modalTxid" style="word-break: break-all; font-family: monospace;"></p>
-                <a id="blockExplorerLink" href="#" target="_blank" style="color: #E6B143; display: block; margin-top: 0.5rem;">View on Block Explorer</a>
-            </div>
-            
-            <div class="entry-detail">
-                <h4>Bitcoin Amount</h4>
-                <p id="modalAmount"></p>
-            </div>
-            
-            <div class="entry-detail">
-                <h4>Bitcoin Price at Time of Purchase</h4>
-                <p id="modalBtcPrice"></p>
-            </div>
-            
-            <div class="entry-detail">
-                <h4>Verification Status</h4>
-                <p id="modalStatus"></p>
-            </div>
-            
-            <form id="verificationForm" action="{{ url_for('admin_entries') }}" method="POST">
-                <input type="hidden" name="id" id="modalEntryId">
-                
-                <div class="form-group">
-                    <label for="verification_notes">Verification Notes</label>
-                    <textarea name="verification_notes" id="modalNotes"></textarea>
-                </div>
-                
-                <div class="modal-actions">
-                    <div>
-                        <button type="submit" name="action" value="verify" class="btn btn-primary" id="verifyBtn">Mark as Verified</button>
-                        <button type="submit" name="action" value="reject" class="btn btn-danger" id="rejectBtn">Mark as Rejected</button>
-                    </div>
-                    <button type="button" class="btn" onclick="closeModal()">Close</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        function showDetails(id, email, wallet, txid, packageName, amount, btcPrice, notes, isVerified) {
-            document.getElementById('modalEntryId').value = id;
-            document.getElementById('modalEmail').textContent = email;
-            document.getElementById('modalWallet').textContent = wallet;
-            document.getElementById('modalTxid').textContent = txid;
-            document.getElementById('modalPackage').textContent = packageName;
-            document.getElementById('modalAmount').textContent = amount + ' BTC';
-            document.getElementById('modalBtcPrice').textContent = '$' + parseFloat(btcPrice).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            document.getElementById('modalNotes').value = notes;
-            
-            // Update block explorer link
-            // Using a Tor-friendly blockchain explorer
-            document.getElementById('blockExplorerLink').href = 'http://explorerzydxu5ecjrkwceayqybizmpjjznk5izmitf2modhcusuqlid.onion/tx/' + txid;
-            // Note: The above is Mempool.space's Tor hidden service
-            
-            if (isVerified) {
-                document.getElementById('modalStatus').textContent = 'Verified';
-                document.getElementById('modalStatus').style.color = '#28a745';
-                // Hide verify button if already verified
-                document.getElementById('verifyBtn').style.display = 'none';
-                document.getElementById('rejectBtn').style.display = 'inline-block';
-            } else {
-                document.getElementById('modalStatus').textContent = 'Pending Verification';
-                document.getElementById('modalStatus').style.color = '#ffc107';
-                // Show verify button if pending
-                document.getElementById('verifyBtn').style.display = 'inline-block';
-                document.getElementById('rejectBtn').style.display = 'inline-block';
-            }
-            
-            document.getElementById('entryModal').style.display = 'flex';
-        }
-        
-        function closeModal() {
-            document.getElementById('entryModal').style.display = 'none';
-        }
-        
-        // Close modal when clicking outside of it
-        window.onclick = function(event) {
-            let modal = document.getElementById('entryModal');
-            if (event.target == modal) {
-                closeModal();
-            }
-        }
-    </script>
+    <!-- No JavaScript or modals - using a dedicated page for entry details -->
 </body>
 </html>

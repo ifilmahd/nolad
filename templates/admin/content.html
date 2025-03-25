@@ -221,6 +221,65 @@
             </div>
         </div>
         
+        <!-- Wallet Settings Section -->
+        <div class="content-section">
+            <h3>Wallet Settings</h3>
+            
+            {% set wallet_address = wallet_content.get('bitcoin_address', '') %}
+            <div class="content-item">
+                <div class="item-header">
+                    <h4>Bitcoin Wallet Address</h4>
+                    <a href="{{ url_for('admin_content') }}?edit=bitcoin_address" class="btn btn-primary edit-btn">Edit</a>
+                </div>
+                <div class="item-description">The Bitcoin address where payments are sent. Make sure to test this address before making it live.</div>
+                <div class="item-value">{{ wallet_address }}</div>
+                
+                {% if request.args.get('edit') == 'bitcoin_address' %}
+                    <div class="edit-form">
+                        <form action="{{ url_for('admin_content') }}" method="POST">
+                            <input type="hidden" name="action" value="edit_wallet">
+                            <input type="hidden" name="key" value="bitcoin_address">
+                            <div class="form-group">
+                                <label for="value-wallet_address">Bitcoin Wallet Address:</label>
+                                <textarea id="value-wallet_address" name="value" rows="2">{{ wallet_address }}</textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                <a href="{{ url_for('admin_content') }}" class="btn">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+            
+            {% set prize_amount = wallet_content.get('prize_amount', '') %}
+            <div class="content-item">
+                <div class="item-header">
+                    <h4>Raffle Prize Amount (BTC)</h4>
+                    <a href="{{ url_for('admin_content') }}?edit=prize_amount" class="btn btn-primary edit-btn">Edit</a>
+                </div>
+                <div class="item-description">The amount of Bitcoin that will be awarded to the raffle winner.</div>
+                <div class="item-value">{{ prize_amount }} BTC</div>
+                
+                {% if request.args.get('edit') == 'prize_amount' %}
+                    <div class="edit-form">
+                        <form action="{{ url_for('admin_content') }}" method="POST">
+                            <input type="hidden" name="action" value="edit_wallet">
+                            <input type="hidden" name="key" value="prize_amount">
+                            <div class="form-group">
+                                <label for="value-prize_amount">Prize Amount (in BTC):</label>
+                                <textarea id="value-prize_amount" name="value" rows="1">{{ prize_amount }}</textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                <a href="{{ url_for('admin_content') }}" class="btn">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
         <div class="content-section">
             <h3>Raffle Countdown Timer</h3>
             <div class="content-item">
@@ -254,27 +313,29 @@
                         <div class="content-item">
                             <div class="item-header">
                                 <h4>{{ content.key|replace('_', ' ')|title }}</h4>
-                                <button class="btn btn-primary edit-btn" onclick="showEditForm({{ content.id }}, '{{ content.value|replace('\n', '\\n')|replace("'", "\\'") }}')">Edit</button>
+                                <a href="{{ url_for('admin_content') }}?edit_id={{ content.id }}" class="btn btn-primary edit-btn">Edit</a>
                             </div>
                             {% if content.description %}
                                 <div class="item-description">{{ content.description }}</div>
                             {% endif %}
                             <div class="item-value">{{ content.value }}</div>
                             
-                            <div id="edit-form-{{ content.id }}" style="display: none;">
-                                <form action="{{ url_for('admin_content') }}" method="POST">
-                                    <input type="hidden" name="action" value="edit">
-                                    <input type="hidden" name="id" value="{{ content.id }}">
-                                    <div class="form-group">
-                                        <label for="value-{{ content.id }}">Edit Content:</label>
-                                        <textarea id="value-{{ content.id }}" name="value" rows="4">{{ content.value }}</textarea>
-                                    </div>
-                                    <div class="form-actions">
-                                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                                        <button type="button" class="btn" onclick="hideEditForm({{ content.id }})">Cancel</button>
-                                    </div>
-                                </form>
-                            </div>
+                            {% if request.args.get('edit_id')|int == content.id %}
+                                <div class="edit-form">
+                                    <form action="{{ url_for('admin_content') }}" method="POST">
+                                        <input type="hidden" name="action" value="edit">
+                                        <input type="hidden" name="id" value="{{ content.id }}">
+                                        <div class="form-group">
+                                            <label for="value-{{ content.id }}">Edit Content:</label>
+                                            <textarea id="value-{{ content.id }}" name="value" rows="4">{{ content.value }}</textarea>
+                                        </div>
+                                        <div class="form-actions">
+                                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                                            <a href="{{ url_for('admin_content') }}" class="btn">Cancel</a>
+                                        </div>
+                                    </form>
+                                </div>
+                            {% endif %}
                         </div>
                     {% endfor %}
                 </div>
@@ -285,16 +346,5 @@
             </div>
         {% endif %}
     </div>
-
-    <script>
-        function showEditForm(id, value) {
-            document.getElementById('edit-form-' + id).style.display = 'block';
-            document.getElementById('value-' + id).value = value.replace(/\\n/g, '\n');
-        }
-
-        function hideEditForm(id) {
-            document.getElementById('edit-form-' + id).style.display = 'none';
-        }
-    </script>
 </body>
 </html>

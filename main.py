@@ -7,12 +7,9 @@ from app import app
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
-# Configure the SQLAlchemy part of the app
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
-app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-    "pool_recycle": 300,
-    "pool_pre_ping": True,
-}
+# Configure the SQLAlchemy part of the app to use SQLite
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///bitlucky.db"
+# No need for pool options with SQLite
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Initialize the SQLAlchemy extension

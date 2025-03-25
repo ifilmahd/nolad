@@ -6,8 +6,7 @@
     {{ meta_refresh|safe if meta_refresh }}
     <title>BitLucky - Win Bitcoin Anonymously</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="icon" href="{{ url_for('static', filename='images/favicon.svg') }}" type="image/svg+xml">
-    <link rel="alternate icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 </head>
 <body>
     <!-- Logo Header with Onion Verification -->
@@ -17,7 +16,7 @@
                 <h1><a href="{{ url_for('index') }}">BitLucky</a></h1>
             </div>
             <div class="onion-verify">
-                <strong>SECURITY CHECK:</strong> Verify you're on the official BitLucky site. Our onion address is: <strong>bluckytgk5zu62pzve25xz2cgqzbq2n4lm4vsydkv6ait4ddedmse6id.onion</strong>
+                <strong>SECURITY CHECK:</strong> Verify you're on the official BitLucky site. Our onion address is: <strong>bluckyfkfilyxzeamwaj3fgaqeyvj2357yfilfqixuywbfn3oe6n6bad.onion</strong>
             </div>
         </div>
     </div>
@@ -37,7 +36,7 @@
             <h2 class="section-title">This Month's Bitcoin Wallet</h2>
             <div class="wallet-display">
                 <div class="wallet-image">
-                    <img src="{{ url_for('static', filename='images/bitcoin-wallet.svg') }}" alt="Bitcoin Wallet" width="300" height="300">
+                    <img src="{{ url_for('static', filename='images/bitcoin-wallet.png') }}" alt="Bitcoin Wallet" width="300" height="300">
                 </div>
                 <div class="wallet-info">
                     <div class="balance">{{ wallet_content.prize_amount }} BTC</div>
@@ -118,7 +117,7 @@
             <h2 class="section-title">Last Month's Winner</h2>
             <div class="winner-display">
                 <div class="winner-image">
-                    <img src="{{ url_for('static', filename='images/trophy.svg') }}" alt="Trophy" width="300" height="300">
+                    <img src="{{ url_for('static', filename='images/trophy.png') }}" alt="Trophy" width="300" height="300">
                 </div>
                 <div class="winner-info">
                     <p class="winner-id">Anonymous Winner: {{ winner_content.winner_id }}</p>
