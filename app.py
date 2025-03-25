@@ -618,6 +618,13 @@ def admin_dashboard():
 @admin_required
 def admin_faqs():
     """Admin FAQ management page"""
+    # Check if an FAQ ID is provided for editing
+    faq_id = request.args.get('faq_id')
+    if faq_id:
+        # Show the edit form for a specific FAQ
+        faq = FAQ.query.get_or_404(faq_id)
+        return render_template('admin/faq_edit.html', faq=faq)
+        
     if request.method == 'POST':
         action = request.form.get('action')
         
@@ -660,6 +667,13 @@ def admin_faqs():
 @admin_required
 def admin_packages():
     """Admin package management page"""
+    # Check if a package ID is provided for editing
+    package_id = request.args.get('package_id')
+    if package_id:
+        # Show the edit form for a specific package
+        package = Package.query.get_or_404(package_id)
+        return render_template('admin/package_edit.html', package=package)
+    
     if request.method == 'POST':
         action = request.form.get('action')
         
@@ -690,7 +704,11 @@ def admin_packages():
                 package.price = float(request.form.get('price', package.price))
                 package.entries = int(request.form.get('entries', package.entries))
                 package.description = request.form.get('description', package.description)
-                package.is_active = bool(request.form.get('is_active', package.is_active))
+                package.is_active = bool(request.form.get('is_active', False))
+                if request.form.get('is_active'):
+                    package.is_active = True
+                else:
+                    package.is_active = False
                 db.session.commit()
                 flash('Package updated successfully!', 'success')
         

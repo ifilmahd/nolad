@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BitLucky Admin - Manage Packages</title>
+    <title>BitLucky Admin - Edit Package</title>
     <style>
         /* Admin page styling - Fallout-inspired but more functional */
         body {
@@ -77,29 +77,6 @@
         .alert-info {
             background-color: #17a2b8;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 2rem;
-        }
-        th, td {
-            padding: 0.8rem;
-            text-align: left;
-            border-bottom: 1px solid #E6B143;
-        }
-        th {
-            background-color: #0E3D44;
-            color: #E6B143;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-        tr:hover {
-            background-color: #175B65;
-        }
-        .actions {
-            display: flex;
-            gap: 0.5rem;
-        }
         .btn {
             display: inline-block;
             padding: 0.5rem 1rem;
@@ -111,6 +88,7 @@
             background-color: #E6B143;
             color: #0E3D44;
             border: none;
+            font-family: 'Courier New', monospace;
         }
         .btn-primary {
             background-color: #E6B143;
@@ -144,8 +122,7 @@
         }
         input[type="text"],
         input[type="number"],
-        textarea,
-        select {
+        textarea {
             width: 100%;
             padding: 0.8rem;
             background-color: #F5F5F0;
@@ -156,33 +133,20 @@
             box-sizing: border-box;
         }
         textarea {
-            min-height: 100px;
+            min-height: 150px;
         }
         .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            margin-top: 1rem;
         }
-        .checkbox-group input[type="checkbox"] {
-            width: auto;
+        .checkbox-group label {
+            display: inline;
+            vertical-align: middle;
+            margin-left: 0.5rem;
         }
         .form-actions {
             margin-top: 1.5rem;
-            text-align: right;
-        }
-        .section-title {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        .toggle-form {
-            cursor: pointer;
-            color: #E6B143;
-            font-weight: bold;
-            text-decoration: underline;
-            text-transform: uppercase;
-            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -191,6 +155,7 @@
         <h1>BitLucky Admin</h1>
         <nav>
             <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_entries') }}">Verify Entries</a>
             <a href="{{ url_for('admin_faqs') }}">Manage FAQs</a>
             <a href="{{ url_for('admin_packages') }}">Manage Packages</a>
             <a href="{{ url_for('admin_content') }}">Site Content</a>
@@ -209,76 +174,36 @@
             {% endif %}
         {% endwith %}
 
-        <h2>Manage Raffle Packages</h2>
-
-        <div class="section-title">
-            <h3>Add New Package</h3>
-        </div>
+        <h2>Edit Package</h2>
+        
         <form action="{{ url_for('admin_packages') }}" method="POST">
-            <input type="hidden" name="action" value="add">
+            <input type="hidden" name="action" value="edit">
+            <input type="hidden" name="id" value="{{ package.id }}">
             <div class="form-group">
                 <label for="name">Package Name:</label>
-                <input type="text" id="name" name="name" required>
+                <input type="text" id="name" name="name" value="{{ package.name }}" required>
             </div>
             <div class="form-group">
                 <label for="price">Price (USD):</label>
-                <input type="number" id="price" name="price" step="0.01" min="0" required>
+                <input type="number" id="price" name="price" step="0.01" min="0" value="{{ package.price }}" required>
             </div>
             <div class="form-group">
                 <label for="entries">Number of Entries:</label>
-                <input type="number" id="entries" name="entries" min="1" required>
+                <input type="number" id="entries" name="entries" min="1" value="{{ package.entries }}" required>
             </div>
             <div class="form-group">
                 <label for="description">Description:</label>
-                <textarea id="description" name="description"></textarea>
+                <textarea id="description" name="description">{{ package.description }}</textarea>
             </div>
-            <div class="form-group checkbox-group">
-                <input type="checkbox" id="is_active" name="is_active" value="1" checked>
-                <label for="is_active">Active</label>
+            <div class="checkbox-group">
+                <input type="checkbox" id="is_active" name="is_active" {% if package.is_active %}checked{% endif %}>
+                <label for="is_active">Active (Visible to users)</label>
             </div>
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Add Package</button>
+                <a href="{{ url_for('admin_packages') }}" class="btn btn-danger">Cancel</a>
+                <button type="submit" class="btn btn-primary">Update Package</button>
             </div>
         </form>
-
-        <h3>Current Packages</h3>
-        {% if packages %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Price (USD)</th>
-                        <th>Entries</th>
-                        <th>Description</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for package in packages %}
-                        <tr>
-                            <td>{{ package.name }}</td>
-                            <td>${{ "%.2f"|format(package.price) }}</td>
-                            <td>{{ package.entries }}</td>
-                            <td>{{ package.description[:50] }}{% if package.description|length > 50 %}...{% endif %}</td>
-                            <td>{% if package.is_active %}Active{% else %}Inactive{% endif %}</td>
-                            <td class="actions">
-                                <a href="{{ url_for('admin_packages', package_id=package.id) }}" class="btn btn-primary">Edit</a>
-                                <form action="{{ url_for('admin_packages') }}" method="POST" style="display: inline;">
-                                    <input type="hidden" name="action" value="delete">
-                                    <input type="hidden" name="id" value="{{ package.id }}">
-                                    <button type="submit" class="btn btn-danger">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>No packages found. Add some using the form above.</p>
-        {% endif %}
-
     </div>
-    <!-- No JavaScript used for editing - using a separate page instead -->
 </body>
 </html>
