@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1024, initial-scale=1.0">
     {{ meta_refresh|safe if meta_refresh }}
-    <title>BitLucky - Win Bitcoin Anonymously</title>
+    <title>BitLucky</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='temp_favicon.png') }}" type="image/x-icon">
 </head>
@@ -27,7 +27,6 @@
             <h1 class="hero-title">BitLucky</h1>
             <p class="hero-subtitle">You deserve a win – and BITLUCKY makes it happen!</p>
             <p class="hero-subtitle">For only 5 USD you can enter our Bitcoin raffle for a chance to win 50 Bitcoins!</p>
-            <p class="hero-tagline">Win Bitcoin Anonymously</p>
             <a href="{{ url_for('packages') }}" class="cta-button">Enter Now</a>
         </div>
     </header>
